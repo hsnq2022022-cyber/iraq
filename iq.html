@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>محرر الصور التفاعلي</title>
+
+<!-- Fontsource Arabic Fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/cairo@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/cairo@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/tajawal@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/tajawal@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/aref-ruqaa@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/aref-ruqaa@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/amiri@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/amiri@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/reem-kufi@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/reem-kufi@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/lateef@latest/arabic-400-normal.css">
+
+<!-- Fabric.js -->
+<script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
+
+<style>
+  :root{
+    --bg:#0f1220;
+    --panel:#171a2e;
+    --panel-2:#1f2340;
+    --border:#2a2f55;
+    --text:#e7e9ff;
+    --muted:#9aa0c7;
+    --accent:#6c8cff;
+    --accent-2:#8a5cff;
+    --danger:#ff6b6b;
+    --ok:#35d39a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:'Cairo','Tajawal',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(138,92,255,.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(108,140,255,.18), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    overflow:hidden;
+  }
+  .app{
+    display:grid;
+    grid-template-columns: 340px 1fr;
+    height:100vh;
+  }
+  /* Sidebar */
+  .sidebar{
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border-left:1px solid var(--border);
+    overflow-y:auto;
+    padding:18px 16px 80px;
+  }
+  .sidebar::-webkit-scrollbar{width:8px}
+  .sidebar::-webkit-scrollbar-thumb{background:#2e3460;border-radius:8px}
+  .brand{
+    display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  }
+  .brand .logo{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:grid;place-items:center;font-weight:800;color:#fff;
+    box-shadow:0 8px 24px rgba(108,140,255,.35);
+  }
+  .brand h1{font-size:18px;margin:0}
+  .brand p{margin:0;color:var(--muted);font-size:12px}
+
+  .section{
+    background:rgba(255,255,255,.02);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .section h3{
+    margin:0 0 12px;
+    font-size:14px;
+    letter-spacing:.3px;
+    color:#cfd3ff;
+    display:flex;align-items:center;gap:8px;
+  }
+  .section h3 .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  }
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+  .row label{font-size:12px;color:var(--muted);min-width:90px}
+  .row input[type="text"], .row input[type="number"], .row select, .row textarea{
+    flex:1;min-width:0;
+    background:#0e1130;color:var(--text);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px 10px;
+    font-family:inherit;font-size:13px;
+    outline:none;
+    transition:border .15s, box-shadow .15s;
+  }
+  .row textarea{min-height:70px;resize:vertical;line-height:1.6}
+  .row input:focus, .row select:focus, .row textarea:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(108,140,255,.18);
+  }
+  .row input[type="color"]{
+    width:42px;height:36px;border:1px solid var(--border);
+    border-radius:10px;background:#0e1130;padding:2px;cursor:pointer;
+  }
+  .row input[type="range"]{flex:1;accent-color:var(--accent)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff;border:none;border-radius:10px;
+    padding:10px 14px;font-family:inherit;font-weight:700;font-size:13px;
+    cursor:pointer;transition:transform .1s, box-shadow .15s, opacity .15s;
+    box-shadow:0 8px 20px rgba(108,140,255,.25);
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.secondary{
+    background:#232850;color:#dfe2ff;box-shadow:none;border:1px solid var(--border);
+  }
+  .btn.ghost{
+    background:transparent;color:#cfd3ff;border:1px dashed var(--border);
+  }
+  .btn.danger{background:linear-gradient(135deg,#ff6b6b,#ff8e53)}
+  .btn.full{width:100%}
+  .btn-group{display:flex;gap:8px;flex-wrap:wrap}
+  .seg{
+    display:inline-flex;background:#0e1130;border:1px solid var(--border);
+    border-radius:10px;padding:3px;gap:3px;
+  }
+  .seg button{
+    background:transparent;color:var(--muted);border:none;padding:6px 10px;
+    border-radius:8px;font-family:inherit;font-size:12px;cursor:pointer;
+  }
+  .seg button.active{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;
+  }
+  .hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+  .divider{height:1px;background:var(--border);margin:10px 0}
+
+  /* Canvas area */
+  .stage{
+    position:relative;
+    display:grid;place-items:center;
+    padding:20px;
+    overflow:auto;
+  }
+  .canvas-wrap{
+    position:relative;
+    background:
+      linear-gradient(45deg,#1a1f3d 25%, transparent 25%),
+      linear-gradient(-45deg,#1a1f3d 25%, transparent 25%),
+      linear-gradient(45deg,transparent 75%,#1a1f3d 75%),
+      linear-gradient(-45deg,transparent 75%,#1a1f3d 75%);
+    background-size:20px 20px;
+    background-position:0 0,0 10px,10px -10px,-10px 0;
+    background-color:#12152c;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+  }
+  .canvas-inner{
+    background:#fff;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .canvas-container{display:block !important}
+  .topbar{
+    position:absolute;top:16px;left:16px;right:16px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    z-index:5;
+  }
+  .chip{
+    background:rgba(23,26,46,.8);backdrop-filter:blur(8px);
+    border:1px solid var(--border);color:var(--text);
+    padding:6px 10px;border-radius:999px;font-size:12px;
+  }
+
+  /* Hide fabric upper-canvas resize handles style tweaks */
+  .upper-canvas{cursor:default}
+
+  @media (max-width: 900px){
+    .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+    .sidebar{max-height:45vh}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">م</div>
+      <div>
+        <h1>محرر الصور التفاعلي</h1>
+        <p>صمّم، عدّل، وصدّر بجودة عالية</p>
+      </div>
+    </div>
+
+    <!-- Background -->
+    <div class="section">
+      <h3><span class="dot"></span>الصورة الأساسية (الخلفية)</h3>
+      <div class="row">
+        <input type="file" id="bgFile" accept="image/*" style="display:none"/>
+        <button class="btn full" onclick="document.getElementById('bgFile').click()">📷 رفع صورة الخلفية</button>
+      </div>
+      <div class="row">
+        <label>العرض</label>
+        <input type="number" id="canvasW" value="1080" min="100" max="4000"/>
+        <label>الارتفاع</label>
+        <input type="number" id="canvasH" value="1080" min="100" max="4000"/>
+      </div>
+      <div class="row">
+        <button class="btn secondary full" id="applySizeBtn">تطبيق المقاس</button>
+      </div>
+      <div class="hint">المقاس الافتراضي 1080×1080. يمكنك تغييره حسب الحاجة.</div>
+    </div>
+
+    <!-- Logo -->
+    <div class="section">
+      <h3><span class="dot"></span>اللوغو</h3>
+      <div class="row">
+        <input type="file" id="logoFile" accept="image/*" style="display:none"/>
+        <button class="btn full" onclick="document.getElementById('logoFile').click()">🖼️ رفع صورة اللوغو</button>
+      </div>
+      <div class="row">
+        <label>الموضع</label>
+        <div class="seg" id="logoPos">
+          <button data-pos="tl" class="active">↖ أعلى اليسار</button>
+          <button data-pos="tr">↗ أعلى اليمين</button>
+          <button data-pos="bl">↙ أسفل اليسار</button>
+          <button data-pos="br">↘ أسفل اليمين</button>
+        </div>
+      </div>
+      <div class="row">
+        <label>الحجم</label>
+        <input type="range" id="logoScale" min="10" max="100" value="25"/>
+        <span id="logoScaleVal" class="chip">25%</span>
+      </div>
+      <div class="row">
+        <label>الهامش</label>
+        <input type="range" id="logoMargin" min="0" max="200" value="40"/>
+      </div>
+      <div class="row">
+        <button class="btn danger full" id="removeLogoBtn">🗑️ إزالة اللوغو</button>
+      </div>
+    </div>
+
+    <!-- Design Box -->
+    <div class="section">
+      <h3><span class="dot"></span>مربع التصميم</h3>
+      <div class="row">
+        <button class="btn full" id="addBoxBtn">➕ إضافة مربع</button>
+      </div>
+      <div class="row">
+        <label>لون الخلفية</label>
+        <input type="color" id="boxFill" value="#ffffff"/>
+        <label>الحدود</label>
+        <input type="color" id="boxStroke" value="#000000"/>
+      </div>
+      <div class="row">
+        <label>سمك الحدود</label>
+        <input type="range" id="boxStrokeW" min="0" max="30" value="0"/>
+        <span id="boxStrokeWVal" class="chip">0</span>
+      </div>
+      <div class="row">
+        <label>الشفافية</label>
+        <input type="range" id="boxOpacity" min="0" max="100" value="80"/>
+        <span id="boxOpacityVal" class="chip">80%</span>
+      </div>
+      <div class="row">
+        <label>زوايا دائرية</label>
+        <input type="range" id="boxRadius" min="0" max="200" value="0"/>
+        <span id="boxRadiusVal" class="chip">0</span>
+      </div>
+      <div class="row">
+        <label>العرض</label>
+        <input type="number" id="boxW" value="600" min="50"/>
+        <label>الارتفاع</label>
+        <input type="number" id="boxH" value="300" min="50"/>
+      </div>
+      <div class="row">
+        <button class="btn secondary full" id="applyBoxSize">تطبيق الحجم</button>
+      </div>
+      <div class="hint">اسحب المربع لتحريكه، واستخدم المقابض للتكبير والتدوير.</div>
+    </div>
+
+    <!-- Text -->
+    <div class="section">
+      <h3><span class="dot"></span>النص</h3>
+      <div class="row">
+        <textarea id="textInput" placeholder="اكتب نصك هنا..."></textarea>
+      </div>
+      <div class="row">
+        <label>الخط</label>
+        <select id="fontFamily">
+          <option value="Cairo">Cairo (القاهرة)</option>
+          <option value="Tajawal">Tajawal (تجوال)</option>
+          <option value="Aref Ruqaa">Aref Ruqaa (عارف رقعة)</option>
+          <option value="Amiri">Amiri (أميري)</option>
+          <option value="Reem Kufi">Reem Kufi (ريم كوفي)</option>
+          <option value="Lateef">Lateef (لطيف)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>الحجم</label>
+        <input type="range" id="fontSize" min="12" max="240" value="60"/>
+        <span id="fontSizeVal" class="chip">60</span>
+      </div>
+      <div class="row">
+        <label>لون النص</label>
+        <input type="color" id="fontColor" value="#111111"/>
+        <label>وزن الخط</label>
+        <select id="fontWeight">
+          <option value="normal">عادي</option>
+          <option value="bold" selected>عريض</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>المحاذاة</label>
+        <div class="seg" id="alignSeg">
+          <button data-align="right" class="active">يمين</button>
+          <button data-align="center">وسط</button>
+          <button data-align="left">يسار</button>
+        </div>
+      </div>
+      <div class="row">
+        <label>تباعد الأسطر</label>
+        <input type="range" id="lineHeight" min="80" max="250" value="130"/>
+        <span id="lineHeightVal" class="chip">1.3</span>
+      </div>
+      <div class="row">
+        <label>تباعد الحروف</label>
+        <input type="range" id="charSpacing" min="0" max="1000" value="0"/>
+        <span id="charSpacingVal" class="chip">0</span>
+      </div>
+      <div class="row">
+        <button class="btn full" id="addTextBtn">✏️ إضافة النص إلى المربع</button>
+      </div>
+      <div class="hint">سيتم وضع النص داخل المربع المحدد حاليًا (إن وُجد).</div>
+    </div>
+
+    <!-- Export -->
+    <div class="section">
+      <h3><span class="dot"></span>التصدير</h3>
+      <div class="row">
+        <label>الصيغة</label>
+        <div class="seg" id="formatSeg">
+          <button data-fmt="png" class="active">PNG</button>
+          <button data-fmt="jpeg">JPG</button>
+        </div>
+      </div>
+      <div class="row">
+        <label>الجودة</label>
+        <input type="range" id="quality" min="50" max="100" value="95"/>
+        <span id="qualityVal" class="chip">0.95</span>
+      </div>
+      <div class="btn-group">
+        <button class="btn full" id="exportBtn">⬇️ تصدير التصميم</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn ghost full" id="resetBtn">🔄 إعادة تعيين الكل</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Stage -->
+  <main class="stage">
+    <div class="topbar">
+      <span class="chip" id="sizeChip">1080 × 1080</span>
+      <span class="chip">اسحب، كبّر، دوّر — المعاينة مباشرة</span>
+    </div>
+    <div class="canvas-wrap">
+      <div class="canvas-inner">
+        <canvas id="c"></canvas>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* =========================================================
+   محرر الصور التفاعلي - Fabric.js
+   ========================================================= */
+
+const CANVAS_DISPLAY_MAX = 720; // أقصى عرض للعرض على الشاشة
+let CANVAS_W = 1080;
+let CANVAS_H = 1080;
+let DISPLAY_SCALE = 1;
+
+// Fabric canvas
+const el = document.getElementById('c');
+const canvas = new fabric.Canvas('c', {
+  preserveObjectStacking: true,
+  selection: true,
+});
+
+function fitCanvasToScreen(){
+  const maxW = Math.min(CANVAS_DISPLAY_MAX, window.innerWidth - 420);
+  DISPLAY_SCALE = Math.min(1, maxW / CANVAS_W);
+  const dw = Math.round(CANVAS_W * DISPLAY_SCALE);
+  const dh = Math.round(CANVAS_H * DISPLAY_SCALE);
+  canvas.setDimensions({ width: dw, height: dh });
+  canvas.setZoom(DISPLAY_SCALE);
+  // إعادة ضبط أبعاد الـ viewport ليبدو 1:1 منطقياً
+  canvas.setWidth(dw);
+  canvas.setHeight(dh);
+  canvas.renderAll();
+}
+
+function setCanvasLogicalSize(w, h){
+  CANVAS_W = Math.max(100, Math.min(4000, parseInt(w)||1080));
+  CANVAS_H = Math.max(100, Math.min(4000, parseInt(h)||1080));
+  document.getElementById('canvasW').value = CANVAS_W;
+  document.getElementById('canvasH').value = CANVAS_H;
+  document.getElementById('sizeChip').textContent = `${CANVAS_W} × ${CANVAS_H}`;
+  // إعادة ضبط الخلفية إن وُجدت
+  const bg = canvas.backgroundImage;
+  if(bg){
+    // سنعيد ضبطها بعد تغيير الأبعاد
+  }
+  fitCanvasToScreen();
+  // إعادة ضبط موقع اللوغو إن وُجد
+  repositionLogo();
+  canvas.renderAll();
+}
+
+setCanvasLogicalSize(1080, 1080);
+window.addEventListener('resize', fitCanvasToScreen);
+
+/* ---------- Background ---------- */
+let bgImage = null;
+document.getElementById('bgFile').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    fabric.Image.fromURL(ev.target.result, (img)=>{
+      // تغطية الكانفاس بالكامل (cover)
+      const scaleX = CANVAS_W / img.width;
+      const scaleY = CANVAS_H / img.height;
+      const scale = Math.max(scaleX, scaleY);
+      img.set({
+        scaleX: scale, scaleY: scale,
+        left: CANVAS_W/2, top: CANVAS_H/2,
+        originX: 'center', originY: 'center',
+        selectable: false, evented: false,
+      });
+      canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+        originX:'center', originY:'center',
+        left: CANVAS_W/2, top: CANVAS_H/2,
+      });
+      bgImage = img;
+    }, { crossOrigin: 'anonymous' });
+  };
+  reader.readAsDataURL(f);
+});
+
+document.getElementById('applySizeBtn').addEventListener('click', ()=>{
+  const w = parseInt(document.getElementById('canvasW').value);
+  const h = parseInt(document.getElementById('canvasH').value);
+  setCanvasLogicalSize(w, h);
+});
+
+/* ---------- Logo ---------- */
+let logoImage = null;
+let logoPos = 'tl';
+const logoPadding = 40;
+
+function repositionLogo(){
+  if(!logoImage) return;
+  const margin = parseInt(document.getElementById('logoMargin').value)||40;
+  const w = logoImage.width * logoImage.scaleX;
+  const h = logoImage.height * logoImage.scaleY;
+  let x, y;
+  if(logoPos === 'tl'){ x = margin; y = margin; }
+  else if(logoPos === 'tr'){ x = CANVAS_W - margin - w; y = margin; }
+  else if(logoPos === 'bl'){ x = margin; y = CANVAS_H - margin - h; }
+  else { x = CANVAS_W - margin - w; y = CANVAS_H - margin - h; }
+  logoImage.set({ left: x, top: y });
+  canvas.renderAll();
+}
+
+document.getElementById('logoFile').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    fabric.Image.fromURL(ev.target.result, (img)=>{
+      // إزالة لوغو قديم
+      if(logoImage){ canvas.remove(logoImage); }
+      const pct = parseInt(document.getElementById('logoScale').value)/100;
+      const targetW = CANVAS_W * pct;
+      const scale = targetW / img.width;
+      img.set({
+        scaleX: scale, scaleY: scale,
+        left: 0, top: 0,
+        cornerColor: '#6c8cff',
+        cornerStyle: 'circle',
+        transparentCorners: false,
+        borderColor: '#6c8cff',
+      });
+      canvas.add(img);
+      logoImage = img;
+      repositionLogo();
+    }, { crossOrigin: 'anonymous' });
+  };
+  reader.readAsDataURL(f);
+});
+
+document.querySelectorAll('#logoPos button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#logoPos button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    logoPos = b.dataset.pos;
+    repositionLogo();
+  });
+});
+
+document.getElementById('logoScale').addEventListener('input', (e)=>{
+  const v = parseInt(e.target.value);
+  document.getElementById('logoScaleVal').textContent = v + '%';
+  if(logoImage){
+    const targetW = CANVAS_W * (v/100);
+    const scale = targetW / logoImage.width;
+    logoImage.set({ scaleX: scale, scaleY: scale });
+    repositionLogo();
+  }
+});
+
+document.getElementById('logoMargin').addEventListener('input', ()=>{
+  repositionLogo();
+});
+
+document.getElementById('removeLogoBtn').addEventListener('click', ()=>{
+  if(logoImage){ canvas.remove(logoImage); logoImage = null; }
+});
+
+/* ---------- Design Box ---------- */
+let activeBox = null;
+
+function createBox(){
+  const w = parseInt(document.getElementById('boxW').value)||600;
+  const h = parseInt(document.getElementById('boxH').value)||300;
+  const rx = parseInt(document.getElementById('boxRadius').value)||0;
+  const fill = document.getElementById('boxFill').value;
+  const stroke = document.getElementById('boxStroke').value;
+  const strokeW = parseInt(document.getElementById('boxStrokeW').value)||0;
+  const opacity = parseInt(document.getElementById('boxOpacity').value)/100;
+
+  const rect = new fabric.Rect({
+    left: CANVAS_W/2 - w/2,
+    top: CANVAS_H/2 - h/2,
+    width: w, height: h,
+    rx: rx, ry: rx,
+    fill: fill,
+    stroke: stroke,
+    strokeWidth: strokeW,
+    opacity: opacity,
+    cornerColor: '#6c8cff',
+    cornerStyle: 'circle',
+    transparentCorners: false,
+    borderColor: '#6c8cff',
+    originX: 'left', originY: 'top',
+  });
+  canvas.add(rect);
+  canvas.setActiveObject(rect);
+  activeBox = rect;
+  canvas.renderAll();
+}
+
+document.getElementById('addBoxBtn').addEventListener('click', createBox);
+
+// عند اختيار أي كائن، إذا كان مربع نخزنه كـ activeBox
+canvas.on('selection:created', (opt)=>{
+  const o = opt.selected[0];
+  if(o && o.type === 'rect') activeBox = o;
+});
+canvas.on('selection:updated', (opt)=>{
+  const o = opt.selected[0];
+  if(o && o.type === 'rect') activeBox = o;
+});
+
+// تحديث قيم المربع عند تحديده
+canvas.on('selection:created', syncBoxUI);
+canvas.on('selection:updated', syncBoxUI);
+canvas.on('object:modified', syncBoxUI);
+canvas.on('object:scaling', syncBoxUI);
+canvas.on('object:moving', syncBoxUI);
+
+function syncBoxUI(){
+  const o = canvas.getActiveObject();
+  if(!o || o.type !== 'rect') return;
+  activeBox = o;
+  const w = Math.round(o.width * o.scaleX);
+  const h = Math.round(o.height * o.scaleY);
+  document.getElementById('boxW').value = w;
+  document.getElementById('boxH').value = h;
+  document.getElementById('boxFill').value = rgbToHex(o.fill) || '#ffffff';
+  document.getElementById('boxStroke').value = rgbToHex(o.stroke) || '#000000';
+  document.getElementById('boxStrokeW').value = o.strokeWidth || 0;
+  document.getElementById('boxStrokeWVal').textContent = o.strokeWidth || 0;
+  document.getElementById('boxOpacity').value = Math.round((o.opacity||1)*100);
+  document.getElementById('boxOpacityVal').textContent = Math.round((o.opacity||1)*100) + '%';
+  document.getElementById('boxRadius').value = o.rx || 0;
+  document.getElementById('boxRadiusVal').textContent = o.rx || 0;
+}
+
+function rgbToHex(c){
+  if(!c) return null;
+  if(typeof c === 'string' && c.startsWith('#')) return c;
+  const m = String(c).match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if(!m) return null;
+  const to = n => ('0'+parseInt(n).toString(16)).slice(-2);
+  return '#' + to(m[1]) + to(m[2]) + to(m[3]);
+}
+
+// ربط عناصر التحكم بالمربع النشط
+function bindBoxControl(id, apply){
+  document.getElementById(id).addEventListener('input', apply);
+}
+
+bindBoxControl('boxFill', (e)=>{ if(activeBox){ activeBox.set('fill', e.target.value); canvas.renderAll(); } });
+bindBoxControl('boxStroke', (e)=>{ if(activeBox){ activeBox.set('stroke', e.target.value); canvas.renderAll(); } });
+bindBoxControl('boxStrokeW', (e)=>{
+  const v = parseInt(e.target.value);
+  document.getElementById('boxStrokeWVal').textContent = v;
+  if(activeBox){ activeBox.set('strokeWidth', v); canvas.renderAll(); }
+});
+bindBoxControl('boxOpacity', (e)=>{
+  const v = parseInt(e.target.value);
+  document.getElementById('boxOpacityVal').textContent = v + '%';
+  if(activeBox){ activeBox.set('opacity', v/100); canvas.renderAll(); }
+});
+bindBoxControl('boxRadius', (e)=>{
+  const v = parseInt(e.target.value);
+  document.getElementById('boxRadiusVal').textContent = v;
+  if(activeBox){ activeBox.set({ rx: v, ry: v }); canvas.renderAll(); }
+});
+
+document.getElementById('applyBoxSize').addEventListener('click', ()=>{
+  if(!activeBox){ createBox(); return; }
+  const w = parseInt(document.getElementById('boxW').value)||600;
+  const h = parseInt(document.getElementById('boxH').value)||300;
+  // إعادة ضبط scale وتطبيق الحجم مباشرة
+  activeBox.set({
+    width: w, height: h,
+    scaleX: 1, scaleY: 1,
+  });
+  activeBox.setCoords();
+  canvas.renderAll();
+});
+
+/* ---------- Text ---------- */
+let currentTextObj = null;
+let currentAlign = 'right';
+
+document.getElementById('fontSize').addEventListener('input', (e)=>{
+  document.getElementById('fontSizeVal').textContent = e.target.value;
+  if(currentTextObj){ currentTextObj.set('fontSize', parseInt(e.target.value)); canvas.renderAll(); }
+});
+document.getElementById('fontColor').addEventListener('input', (e)=>{
+  if(currentTextObj){ currentTextObj.set('fill', e.target.value); canvas.renderAll(); }
+});
+document.getElementById('fontWeight').addEventListener('change', (e)=>{
+  if(currentTextObj){ currentTextObj.set('fontWeight', e.target.value); canvas.renderAll(); }
+});
+document.getElementById('fontFamily').addEventListener('change', (e)=>{
+  if(currentTextObj){ currentTextObj.set('fontFamily', e.target.value); canvas.renderAll(); }
+});
+document.getElementById('lineHeight').addEventListener('input', (e)=>{
+  const v = parseInt(e.target.value)/100;
+  document.getElementById('lineHeightVal').textContent = v.toFixed(2);
+  if(currentTextObj){ currentTextObj.set('lineHeight', v); canvas.renderAll(); }
+});
+document.getElementById('charSpacing').addEventListener('input', (e)=>{
+  const v = parseInt(e.target.value);
+  document.getElementById('charSpacingVal').textContent = v;
+  if(currentTextObj){ currentTextObj.set('charSpacing', v); canvas.renderAll(); }
+});
+
+document.querySelectorAll('#alignSeg button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#alignSeg button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    currentAlign = b.dataset.align;
+    if(currentTextObj){
+      currentTextObj.set('textAlign', currentAlign);
+      canvas.renderAll();
+    }
+  });
+});
+
+document.getElementById('addTextBtn').addEventListener('click', ()=>{
+  const txt = document.getElementById('textInput').value.trim();
+  if(!txt) return;
+
+  const fontSize = parseInt(document.getElementById('fontSize').value)||60;
+  const fontColor = document.getElementById('fontColor').value;
+  const fontWeight = document.getElementById('fontWeight').value;
+  const fontFamily = document.getElementById('fontFamily').value;
+  const lineHeight = parseInt(document.getElementById('lineHeight').value)/100;
+  const charSpacing = parseInt(document.getElementById('charSpacing').value);
+
+  // تحديد موضع النص داخل المربع النشط إن وُجد
+  let left = CANVAS_W/2, top = CANVAS_H/2, width = CANVAS_W*0.8;
+  if(activeBox){
+    const b = activeBox;
+    const bx = b.left;
+    const by = b.top;
+    const bw = b.width * b.scaleX;
+    const bh = b.height * b.scaleY;
+    left = bx + bw/2;
+    top = by + bh/2;
+    width = bw * 0.9;
+  }
+
+  // إذا كان هناك كائن نص محدد مسبقًا، نحدّثه
+  if(currentTextObj && canvas.getObjects().includes(currentTextObj)){
+    currentTextObj.set({
+      text: txt,
+      fontSize, fill: fontColor, fontWeight, fontFamily,
+      lineHeight, charSpacing, textAlign: currentAlign,
+      width,
+    });
+    currentTextObj.initDimensions();
+    currentTextObj.setCoords();
+    canvas.setActiveObject(currentTextObj);
+    canvas.renderAll();
+    return;
+  }
+
+  const t = new fabric.Textbox(txt, {
+    left, top,
+    originX: 'center', originY: 'center',
+    width,
+    fontSize,
+    fill: fontColor,
+    fontWeight,
+    fontFamily,
+    lineHeight,
+    charSpacing,
+    textAlign: currentAlign,
+    direction: 'rtl',
+    cornerColor: '#6c8cff',
+    cornerStyle: 'circle',
+    transparentCorners: false,
+    borderColor: '#6c8cff',
+  });
+  canvas.add(t);
+  canvas.setActiveObject(t);
+  currentTextObj = t;
+  canvas.renderAll();
+});
+
+/* ---------- Export ---------- */
+let exportFormat = 'png';
+document.querySelectorAll('#formatSeg button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#formatSeg button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    exportFormat = b.dataset.fmt;
+  });
+});
+document.getElementById('quality').addEventListener('input', (e)=>{
+  document.getElementById('qualityVal').textContent = (parseInt(e.target.value)/100).toFixed(2);
+});
+
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  // إلغاء التحديد قبل التصدير
+  canvas.discardActiveObject();
+  canvas.renderAll();
+
+  const multiplier = 1 / DISPLAY_SCALE; // لاستعادة المقاس الأصلي
+  const fmt = exportFormat;
+  const quality = parseInt(document.getElementById('quality').value)/100;
+
+  const dataURL = canvas.toDataURL({
+    format: fmt,
+    quality: quality,
+    multiplier: multiplier,
+  });
+
+  const link = document.createElement('a');
+  const ext = fmt === 'jpeg' ? 'jpg' : 'png';
+  link.download = `design-${Date.now()}.${ext}`;
+  link.href = dataURL;
+  link.click();
+});
+
+/* ---------- Reset ---------- */
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('هل تريد إعادة تعيين التصميم بالكامل؟')) return;
+  canvas.clear();
+  canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
+  bgImage = null; logoImage = null; activeBox = null; currentTextObj = null;
+});
+
+/* ---------- Initial hint rect (اختياري) ---------- */
+// لا نضيف أي شيء افتراضيًا — المستخدم يبدأ من الصفر.
+
+</script>
+</body>
+</html>
