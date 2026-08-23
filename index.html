@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>محرر الصور التفاعلي</title>
 
-<!-- Fontsource Arabic Fonts -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/cairo@latest/arabic-400-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/cairo@latest/arabic-700-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/tajawal@latest/arabic-400-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/tajawal@latest/arabic-700-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/aref-ruqaa@latest/arabic-400-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/aref-ruqaa@latest/arabic-700-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/amiri@latest/arabic-400-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/amiri@latest/arabic-700-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/reem-kufi@latest/arabic-400-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/reem-kufi@latest/arabic-700-normal.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/lateef@latest/arabic-400-normal.css">
+<!-- Fontsource Arabic Fonts (روابط مصححة: fonts وليس css) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/cairo@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/tajawal@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/tajawal@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/aref-ruqaa@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/aref-ruqaa@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/amiri@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/amiri@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/reem-kufi@latest/arabic-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/reem-kufi@latest/arabic-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/lateef@latest/arabic-400-normal.css">
 
-<!-- Fabric.js -->
-<script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js"></script>
+<!-- ملاحظة: تم حذف تحميل Fabric.js الثابت من هنا -->
+<!-- يتم تحميله الآن ديناميكيًا في نهاية الصفحة مع مصادر احتياطية متعددة -->
 
 <style>
   :root{
@@ -130,6 +130,7 @@
   }
   .btn.danger{background:linear-gradient(135deg,#ff6b6b,#ff8e53)}
   .btn.full{width:100%}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
   .btn-group{display:flex;gap:8px;flex-wrap:wrap}
   .seg{
     display:inline-flex;background:#0e1130;border:1px solid var(--border);
@@ -228,6 +229,20 @@
   .toast.err{border-color:var(--danger)}
   .toast.warn{border-color:var(--warn)}
 
+  .loading-overlay{
+    position:fixed;inset:0;background:rgba(15,18,32,.92);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:2000;gap:14px;
+  }
+  .spinner{
+    width:44px;height:44px;border-radius:50%;
+    border:4px solid #2a2f55;border-top-color:var(--accent);
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-overlay p{color:var(--muted);font-size:13px}
+  .loading-overlay.hidden{display:none}
+
   @media (max-width: 900px){
     .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
     .sidebar{max-height:45vh}
@@ -236,6 +251,11 @@
 </style>
 </head>
 <body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingText">⏳ جاري تحميل مكتبة التحرير (Fabric.js)...</p>
+</div>
 
 <div class="app">
   <aside class="sidebar">
@@ -252,7 +272,7 @@
       <h3><span class="dot"></span>الصورة الأساسية (الخلفية)</h3>
       <div class="row">
         <input type="file" id="bgFile" accept="image/*" style="display:none"/>
-        <button class="btn full" onclick="document.getElementById('bgFile').click()">📷 رفع صورة الخلفية</button>
+        <button class="btn full app-btn" data-click="bgFile" disabled>📷 رفع صورة الخلفية</button>
       </div>
       <div class="row">
         <label>العرض</label>
@@ -261,7 +281,7 @@
         <input type="number" id="canvasH" value="1080" min="100" max="4000"/>
       </div>
       <div class="row">
-        <button class="btn secondary full" id="applySizeBtn">تطبيق المقاس</button>
+        <button class="btn secondary full" id="applySizeBtn" disabled>تطبيق المقاس</button>
       </div>
       <div class="hint">المقاس الافتراضي 1080×1080.</div>
     </div>
@@ -352,7 +372,7 @@
       <h3><span class="dot"></span>اللوغو / شعار القناة</h3>
       <div class="row">
         <input type="file" id="logoFile" accept="image/*" style="display:none"/>
-        <button class="btn full" onclick="document.getElementById('logoFile').click()">🖼️ رفع صورة اللوغو</button>
+        <button class="btn full app-btn" data-click="logoFile" disabled>🖼️ رفع صورة اللوغو</button>
       </div>
       <div class="row">
         <label>الموضع</label>
@@ -381,7 +401,7 @@
     <div class="section">
       <h3><span class="dot"></span>مربع التصميم</h3>
       <div class="row">
-        <button class="btn full" id="addBoxBtn">➕ إضافة مربع</button>
+        <button class="btn full" id="addBoxBtn" disabled>➕ إضافة مربع</button>
       </div>
       <div class="row">
         <label>لون الخلفية</label>
@@ -411,7 +431,7 @@
         <input type="number" id="boxH" value="300" min="50"/>
       </div>
       <div class="row">
-        <button class="btn secondary full" id="applyBoxSize">تطبيق الحجم</button>
+        <button class="btn secondary full" id="applyBoxSize" disabled>تطبيق الحجم</button>
       </div>
     </div>
 
@@ -435,7 +455,7 @@
       <div class="row">
         <label>رفع خط مخصص</label>
         <input type="file" id="customFontFile" accept=".ttf,.otf,.woff,.woff2" style="display:none"/>
-        <button class="btn secondary full" onclick="document.getElementById('customFontFile').click()">📤 رفع ملف خط (TTF/OTF)</button>
+        <button class="btn secondary full app-btn" data-click="customFontFile">📤 رفع ملف خط (TTF/OTF)</button>
       </div>
       <div class="row" id="customFontRow" style="display:none">
         <label>الخط المخصص</label>
@@ -474,7 +494,7 @@
         <span id="charSpacingVal" class="chip">0</span>
       </div>
       <div class="row">
-        <button class="btn full" id="addTextBtn">✏️ إضافة/تحديث النص</button>
+        <button class="btn full" id="addTextBtn" disabled>✏️ إضافة/تحديث النص</button>
       </div>
     </div>
 
@@ -494,10 +514,10 @@
         <span id="qualityVal" class="chip">0.95</span>
       </div>
       <div class="btn-group">
-        <button class="btn full" id="exportBtn">⬇️ تصدير التصميم</button>
+        <button class="btn full" id="exportBtn" disabled>⬇️ تصدير التصميم</button>
       </div>
       <div class="row" style="margin-top:8px">
-        <button class="btn ghost full" id="resetBtn">🔄 إعادة تعيين الكل</button>
+        <button class="btn ghost full" id="resetBtn" disabled>🔄 إعادة تعيين الكل</button>
       </div>
     </div>
   </aside>
@@ -518,61 +538,87 @@
 <div class="status-bar">
   <span id="fabricStatus">⏳ Fabric.js...</span>
   <span id="fontsStatus">⏳ الخطوط...</span>
-  <span id="lastAction">جاهز</span>
+  <span id="lastAction">جاري التحميل...</span>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 /* =========================================================
-   محرر الصور التفاعلي - Fabric.js (الإصدار المُحسَّن)
+   محمّل Fabric.js مع مصادر احتياطية متعددة
+   يحل مشكلة: لو فشل مصدر CDN واحد، لا تتوقف الصفحة كاملة
    ========================================================= */
+(function(){
+  var CDN_URLS = [
+    'https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js',
+    'https://unpkg.com/fabric@5.3.0/dist/fabric.min.js'
+  ];
+  var idx = 0;
 
-// ---------- حالة عامة ----------
-const CANVAS_DISPLAY_MAX = 720;
-let CANVAS_W = 1080;
-let CANVAS_H = 1080;
-let DISPLAY_SCALE = 1;
+  function fail(){
+    var el = document.getElementById('fabricStatus');
+    if (el) el.innerHTML = '<span class="err">❌ فشل تحميل Fabric.js من جميع المصادر — تحقق من الاتصال بالإنترنت</span>';
+    var lt = document.getElementById('loadingText');
+    if (lt) lt.textContent = '❌ تعذّر تحميل مكتبة التحرير. أعد تحميل الصفحة أو تحقق من الإنترنت.';
+    var sp = document.querySelector('.spinner');
+    if (sp) sp.style.display = 'none';
+  }
 
-// ---------- أدوات مساعدة ----------
-function showToast(msg, type='ok', duration=2500){
-  const t = document.getElementById('toast');
+  function tryLoad(){
+    if (idx >= CDN_URLS.length) { fail(); return; }
+    var url = CDN_URLS[idx];
+    var s = document.createElement('script');
+    s.src = url;
+    s.onload = function(){
+      if (typeof fabric !== 'undefined') {
+        var el = document.getElementById('fabricStatus');
+        if (el) el.innerHTML = '<span class="ok">✓ Fabric.js ' + fabric.version + '</span>';
+        var overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.classList.add('hidden');
+        try { initApp(); } catch(e){ console.error('[initApp] خطأ عند بدء التطبيق:', e); }
+      } else {
+        idx++; tryLoad();
+      }
+    };
+    s.onerror = function(){
+      console.warn('[FabricLoader] فشل تحميل من:', url);
+      idx++; tryLoad();
+    };
+    document.head.appendChild(s);
+  }
+
+  tryLoad();
+})();
+
+function showToast(msg, type, duration){
+  type = type || 'ok'; duration = duration || 2500;
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show ' + type;
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(()=>{ t.className = 'toast ' + type; }, duration);
+  showToast._t = setTimeout(function(){ t.className = 'toast ' + type; }, duration);
 }
 function setLastAction(msg){
-  document.getElementById('lastAction').textContent = msg;
+  var el = document.getElementById('lastAction');
+  if (el) el.textContent = msg;
 }
 
-// ---------- التحقق من Fabric.js ----------
-if (typeof fabric === 'undefined') {
-  document.getElementById('fabricStatus').innerHTML = '<span class="err">❌ فشل تحميل Fabric.js</span>';
-  showToast('فشل تحميل مكتبة Fabric.js. تحقق من الاتصال بالإنترنت.', 'err', 5000);
-  throw new Error('Fabric.js not loaded');
-} else {
-  document.getElementById('fabricStatus').innerHTML = '<span class="ok">✓ Fabric.js ' + fabric.version + '</span>';
-}
-
-// ---------- التحقق من الخطوط ----------
 async function checkFonts(){
-  const el = document.getElementById('fontsStatus');
+  var el = document.getElementById('fontsStatus');
   try {
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-    const required = ['Cairo','Tajawal','Aref Ruqaa','Amiri','Reem Kufi','Lateef'];
-    const loaded = [];
-    const missing = [];
-    for (const f of required) {
-      const ok = document.fonts && document.fonts.check(`16px "${f}"`);
+    if (document.fonts && document.fonts.ready) { await document.fonts.ready; }
+    var required = ['Cairo','Tajawal','Aref Ruqaa','Amiri','Reem Kufi','Lateef'];
+    var loaded = [], missing = [];
+    for (var i=0;i<required.length;i++){
+      var f = required[i];
+      var ok = document.fonts && document.fonts.check('16px "' + f + '"');
       (ok ? loaded : missing).push(f);
     }
     if (missing.length === 0) {
       el.innerHTML = '<span class="ok">✓ جميع الخطوط محمّلة ('+loaded.length+')</span>';
     } else {
-      el.innerHTML = '<span class="warn">⚠ خطوط ناقصة: '+missing.join('، ')+'</span>';
+      el.innerHTML = '<span class="warn">⚠ خطوط ناقصة: '+missing.join('، ')+' (ستُستبدل بخط بديل تلقائيًا)</span>';
     }
   } catch(e){
     el.innerHTML = '<span class="warn">⚠ تعذر التحقق من الخطوط</span>';
@@ -580,7 +626,28 @@ async function checkFonts(){
 }
 checkFonts();
 
-// ---------- Fabric Canvas ----------
+/* =========================================================
+   initApp() — كل منطق التطبيق يعمل هنا فقط بعد تأكد نجاح Fabric.js
+   ========================================================= */
+function initApp(){
+
+const CANVAS_DISPLAY_MAX = 720;
+let CANVAS_W = 1080;
+let CANVAS_H = 1080;
+let DISPLAY_SCALE = 1;
+
+// تفعيل كل الأزرار المعطّلة مؤقتًا لحين تحميل fabric
+document.querySelectorAll('button[disabled]').forEach(b => b.disabled = false);
+
+// ربط أزرار رفع الملفات (كانت onclick inline سابقًا، أصبحت هنا موحّدة وآمنة)
+document.querySelectorAll('.app-btn[data-click]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const targetId = btn.getAttribute('data-click');
+    const input = document.getElementById(targetId);
+    if (input) input.click();
+  });
+});
+
 const elCanvas = document.getElementById('c');
 const canvas = new fabric.Canvas('c', {
   preserveObjectStacking: true,
@@ -612,55 +679,28 @@ function setCanvasLogicalSize(w, h){
 setCanvasLogicalSize(1080, 1080);
 window.addEventListener('resize', fitCanvasToScreen);
 
-/* =========================================================
-   رفع الصور - دالة موحّدة وموثوقة
-   ========================================================= */
+/* ---------- رفع الصور ---------- */
 function loadImageFromFile(file, callback){
   console.log('[ImageLoader] بدء تحميل الملف:', file.name, file.type, file.size, 'bytes');
-
-  if (!file) {
-    console.error('[ImageLoader] الملف فارغ');
-    showToast('الملف غير موجود', 'err');
-    return;
-  }
-  if (!file.type.startsWith('image/')) {
-    console.error('[ImageLoader] نوع الملف غير صالح:', file.type);
-    showToast('الملف ليس صورة صالحة', 'err');
-    return;
-  }
+  if (!file) { showToast('الملف غير موجود', 'err'); return; }
+  if (!file.type.startsWith('image/')) { showToast('الملف ليس صورة صالحة', 'err'); return; }
 
   const reader = new FileReader();
-  reader.onerror = (err) => {
-    console.error('[ImageLoader] فشل قراءة الملف:', err);
-    showToast('فشل قراءة الملف', 'err');
-  };
-  reader.onabort = () => {
-    console.error('[ImageLoader] تم إلغاء قراءة الملف');
-    showToast('تم إلغاء القراءة', 'err');
-  };
+  reader.onerror = () => showToast('فشل قراءة الملف', 'err');
+  reader.onabort = () => showToast('تم إلغاء القراءة', 'err');
   reader.onload = (ev) => {
     const dataUrl = ev.target.result;
-    console.log('[ImageLoader] تم تحويل الملف إلى DataURL، الطول:', dataUrl.length);
-
-    // استخدام Image()原生 لضمان اكتمال التحميل قبل fabric
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.onload = () => {
-      console.log('[ImageLoader] تم تحميل الصورة بنجاح:', img.width, '×', img.height);
       try {
-        const fabricImg = new fabric.Image(img, {
-          crossOrigin: 'anonymous',
-        });
+        const fabricImg = new fabric.Image(img, {});
         callback(fabricImg);
       } catch(e){
         console.error('[ImageLoader] فشل إنشاء fabric.Image:', e);
         showToast('فشل معالجة الصورة: ' + e.message, 'err');
       }
     };
-    img.onerror = (e) => {
-      console.error('[ImageLoader] فشل تحميل الصورة من DataURL', e);
-      showToast('فشل تحميل الصورة', 'err');
-    };
+    img.onerror = () => showToast('فشل تحميل الصورة', 'err');
     img.src = dataUrl;
   };
   reader.readAsDataURL(file);
@@ -670,7 +710,7 @@ function loadImageFromFile(file, callback){
 let bgImage = null;
 document.getElementById('bgFile').addEventListener('change', (e)=>{
   const f = e.target.files && e.target.files[0];
-  if (!f) { console.warn('[BG] لم يتم اختيار ملف'); return; }
+  if (!f) return;
   loadImageFromFile(f, (fabricImg) => {
     const scaleX = CANVAS_W / fabricImg.width;
     const scaleY = CANVAS_H / fabricImg.height;
@@ -686,11 +726,9 @@ document.getElementById('bgFile').addEventListener('change', (e)=>{
       bgImage = fabricImg;
       showToast('✓ تم رفع صورة الخلفية', 'ok');
       setLastAction('تم رفع خلفية جديدة');
-    }, {
-      originX:'center', originY:'center',
-      left: CANVAS_W/2, top: CANVAS_H/2,
-    });
+    }, { originX:'center', originY:'center', left: CANVAS_W/2, top: CANVAS_H/2 });
   });
+  e.target.value = '';
 });
 
 document.getElementById('applySizeBtn').addEventListener('click', ()=>{
@@ -720,7 +758,7 @@ function repositionLogo(){
 
 document.getElementById('logoFile').addEventListener('change', (e)=>{
   const f = e.target.files && e.target.files[0];
-  if (!f) { console.warn('[Logo] لم يتم اختيار ملف'); return; }
+  if (!f) return;
   loadImageFromFile(f, (fabricImg) => {
     if(logoImage){ canvas.remove(logoImage); }
     const pct = parseInt(document.getElementById('logoScale').value)/100;
@@ -729,10 +767,8 @@ document.getElementById('logoFile').addEventListener('change', (e)=>{
     fabricImg.set({
       scaleX: scale, scaleY: scale,
       left: 0, top: 0,
-      cornerColor: '#6c8cff',
-      cornerStyle: 'circle',
-      transparentCorners: false,
-      borderColor: '#6c8cff',
+      cornerColor: '#6c8cff', cornerStyle: 'circle',
+      transparentCorners: false, borderColor: '#6c8cff',
     });
     canvas.add(fabricImg);
     logoImage = fabricImg;
@@ -740,6 +776,7 @@ document.getElementById('logoFile').addEventListener('change', (e)=>{
     showToast('✓ تم رفع اللوغو', 'ok');
     setLastAction('تم رفع لوغو جديد');
   });
+  e.target.value = '';
 });
 
 document.querySelectorAll('#logoPos button').forEach(b=>{
@@ -768,10 +805,8 @@ document.getElementById('removeLogoBtn').addEventListener('click', ()=>{
   if(logoImage){ canvas.remove(logoImage); logoImage = null; showToast('تم إزالة اللوغو','ok'); }
 });
 
-/* =========================================================
-   قوالب الأخبار العاجلة
-   ========================================================= */
-let templateObjects = []; // العناصر التي ينشئها القالب
+/* ---------- قوالب الأخبار العاجلة ---------- */
+let templateObjects = [];
 let currentTemplateType = null;
 
 function clearTemplate(){
@@ -797,76 +832,48 @@ function applyNewsTemplate(type){
   const fontSize = parseInt(document.getElementById('tplFontSize').value);
   const rx = cornerStyle === 'round' ? 20 : 0;
 
-  // أبعاد القالب
   const bannerH = 90;
   const newsH = 200;
   const bannerY = bannerPos === 'top' ? 0 : CANVAS_H - bannerH;
   const newsY = bannerPos === 'top' ? bannerH : CANVAS_H - bannerH - newsH;
 
-  // 1) شريط العنوان (عاجل/الآن)
   const banner = new fabric.Rect({
-    left: 0, top: bannerY,
-    width: CANVAS_W, height: bannerH,
-    fill: bannerColor,
-    rx: rx, ry: rx,
-    selectable: true,
-    hasControls: true,
+    left: 0, top: bannerY, width: CANVAS_W, height: bannerH,
+    fill: bannerColor, rx: rx, ry: rx, selectable: true, hasControls: true,
   });
   banner._tplRole = 'banner';
 
   const bannerLabel = new fabric.Textbox(bannerText, {
     left: CANVAS_W - 40, top: bannerY + bannerH/2,
     originX: 'right', originY: 'center',
-    fontSize: 54,
-    fontWeight: 'bold',
-    fontFamily: 'Aref Ruqaa',
-    fill: bannerTextColor,
-    direction: 'rtl',
-    selectable: true,
-    width: CANVAS_W - 80,
+    fontSize: 54, fontWeight: 'bold', fontFamily: 'Aref Ruqaa',
+    fill: bannerTextColor, selectable: true, width: CANVAS_W - 80,
   });
   bannerLabel._tplRole = 'bannerLabel';
 
-  // 2) مربع نص الخبر
   const newsBox = new fabric.Rect({
-    left: 0, top: newsY,
-    width: CANVAS_W, height: newsH,
-    fill: newsBg,
-    rx: rx, ry: rx,
-    opacity: 0.92,
-    selectable: true,
+    left: 0, top: newsY, width: CANVAS_W, height: newsH,
+    fill: newsBg, rx: rx, ry: rx, opacity: 0.92, selectable: true,
   });
   newsBox._tplRole = 'newsBox';
 
   const newsTextObj = new fabric.Textbox(newsText, {
     left: CANVAS_W/2, top: newsY + newsH/2,
-    originX: 'center', originY: 'center',
-    width: CANVAS_W - 120,
-    fontSize: fontSize,
-    fontWeight: 'bold',
-    fontFamily: 'Cairo',
-    fill: newsColor,
-    textAlign: 'center',
-    direction: 'rtl',
-    lineHeight: 1.3,
-    selectable: true,
+    originX: 'center', originY: 'center', width: CANVAS_W - 120,
+    fontSize: fontSize, fontWeight: 'bold', fontFamily: 'Cairo',
+    fill: newsColor, textAlign: 'center', lineHeight: 1.3, selectable: true,
   });
   newsTextObj._tplRole = 'newsText';
 
-  // 3) خط فاصل زخرفي
   const separator = new fabric.Rect({
     left: 40, top: bannerPos === 'top' ? bannerY + bannerH - 6 : newsY + newsH,
-    width: CANVAS_W - 80, height: 6,
-    fill: bannerColor,
-    selectable: true,
+    width: CANVAS_W - 80, height: 6, fill: bannerColor, selectable: true,
   });
   separator._tplRole = 'separator';
 
   [banner, newsBox, separator, bannerLabel, newsTextObj].forEach(o => {
-    o.cornerColor = '#6c8cff';
-    o.cornerStyle = 'circle';
-    o.transparentCorners = false;
-    o.borderColor = '#6c8cff';
+    o.cornerColor = '#6c8cff'; o.cornerStyle = 'circle';
+    o.transparentCorners = false; o.borderColor = '#6c8cff';
     canvas.add(o);
     templateObjects.push(o);
   });
@@ -874,14 +881,12 @@ function applyNewsTemplate(type){
   document.getElementById('templateCustom').style.display = 'block';
   canvas.renderAll();
   showToast('✓ تم تطبيق القالب', 'ok');
-  setLastAction('تم تطبيق قالب: ' + ({breaking:'عاجل',now:'الآن',headline:'عنوان رئيسي',ticker:'مباير'}[type] || type));
+  setLastAction('تم تطبيق قالب: ' + ({breaking:'عاجل',now:'الآن',headline:'عنوان رئيسي',ticker:'مباشر'}[type] || type));
 }
 
-// ربط بطاقات القوالب
 document.querySelectorAll('.template-card').forEach(card => {
   card.addEventListener('click', () => {
     const type = card.dataset.template;
-    // ضبط الألوان الافتراضية حسب القالب
     const presets = {
       breaking: { banner:'#c0392b', bannerText:'#ffffff', newsBg:'#111111', newsColor:'#ffffff', label:'عاجل' },
       now:      { banner:'#1e3a8a', bannerText:'#fbbf24', newsBg:'#0f172a', newsColor:'#ffffff', label:'الآن' },
@@ -898,7 +903,6 @@ document.querySelectorAll('.template-card').forEach(card => {
   });
 });
 
-// تحديث القالب
 document.getElementById('tplApplyBtn').addEventListener('click', () => {
   if (!currentTemplateType) { showToast('لا يوجد قالب مطبّق','warn'); return; }
   applyNewsTemplate(currentTemplateType);
@@ -908,7 +912,6 @@ document.getElementById('tplRemoveBtn').addEventListener('click', () => {
   showToast('تم إزالة القالب','ok');
 });
 
-// تبديل موقع الشريط والحواف
 document.querySelectorAll('#tplBannerPos button').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('#tplBannerPos button').forEach(x => x.classList.remove('active'));
@@ -924,7 +927,7 @@ document.querySelectorAll('#tplCornerStyle button').forEach(b => {
   });
 });
 
-/* ---------- Design Box ---------- */
+/* ---------- مربع التصميم ---------- */
 let activeBox = null;
 
 function createBox(){
@@ -937,18 +940,11 @@ function createBox(){
   const opacity = parseInt(document.getElementById('boxOpacity').value)/100;
 
   const rect = new fabric.Rect({
-    left: CANVAS_W/2 - w/2,
-    top: CANVAS_H/2 - h/2,
-    width: w, height: h,
-    rx: rx, ry: rx,
-    fill: fill,
-    stroke: stroke,
-    strokeWidth: strokeW,
-    opacity: opacity,
-    cornerColor: '#6c8cff',
-    cornerStyle: 'circle',
-    transparentCorners: false,
-    borderColor: '#6c8cff',
+    left: CANVAS_W/2 - w/2, top: CANVAS_H/2 - h/2,
+    width: w, height: h, rx: rx, ry: rx,
+    fill: fill, stroke: stroke, strokeWidth: strokeW, opacity: opacity,
+    cornerColor: '#6c8cff', cornerStyle: 'circle',
+    transparentCorners: false, borderColor: '#6c8cff',
     originX: 'left', originY: 'top',
   });
   canvas.add(rect);
@@ -1028,7 +1024,7 @@ document.getElementById('applyBoxSize').addEventListener('click', ()=>{
   canvas.renderAll();
 });
 
-/* ---------- Text ---------- */
+/* ---------- النص ---------- */
 let currentTextObj = null;
 let currentAlign = 'right';
 
@@ -1044,10 +1040,7 @@ document.getElementById('fontWeight').addEventListener('change', (e)=>{
 });
 
 function applyFontToCurrentText(fontName){
-  if(currentTextObj){
-    currentTextObj.set('fontFamily', fontName);
-    canvas.renderAll();
-  }
+  if(currentTextObj){ currentTextObj.set('fontFamily', fontName); canvas.renderAll(); }
 }
 document.getElementById('fontFamily').addEventListener('change', (e)=>{
   applyFontToCurrentText(e.target.value);
@@ -1083,12 +1076,9 @@ document.getElementById('addTextBtn').addEventListener('click', ()=>{
   const fontSize = parseInt(document.getElementById('fontSize').value)||60;
   const fontColor = document.getElementById('fontColor').value;
   const fontWeight = document.getElementById('fontWeight').value;
-  // دمج الخطوط المخصصة
   const customSel = document.getElementById('customFontSelect');
   let fontFamily = document.getElementById('fontFamily').value;
-  if (customSel.style.display !== 'none' && customSel.value) {
-    fontFamily = customSel.value;
-  }
+  if (customSel.style.display !== 'none' && customSel.value) { fontFamily = customSel.value; }
   const lineHeight = parseInt(document.getElementById('lineHeight').value)/100;
   const charSpacing = parseInt(document.getElementById('charSpacing').value);
 
@@ -1114,11 +1104,9 @@ document.getElementById('addTextBtn').addEventListener('click', ()=>{
   }
 
   const t = new fabric.Textbox(txt, {
-    left, top,
-    originX: 'center', originY: 'center',
+    left, top, originX: 'center', originY: 'center',
     width, fontSize, fill: fontColor, fontWeight, fontFamily,
     lineHeight, charSpacing, textAlign: currentAlign,
-    direction: 'rtl',
     cornerColor: '#6c8cff', cornerStyle: 'circle',
     transparentCorners: false, borderColor: '#6c8cff',
   });
@@ -1134,14 +1122,12 @@ let customFontCounter = 0;
 document.getElementById('customFontFile').addEventListener('change', async (e) => {
   const f = e.target.files && e.target.files[0];
   if (!f) return;
-  console.log('[CustomFont] رفع خط:', f.name, f.size);
   try {
     const fontName = 'CustomFont_' + (++customFontCounter) + '_' + f.name.replace(/\.[^.]+$/,'').replace(/\s+/g,'_');
     const url = URL.createObjectURL(f);
     const face = new FontFace(fontName, `url(${url})`);
     await face.load();
     document.fonts.add(face);
-    console.log('[CustomFont] تم تحميل الخط:', fontName);
 
     const sel = document.getElementById('customFontSelect');
     const opt = document.createElement('option');
@@ -1158,9 +1144,10 @@ document.getElementById('customFontFile').addEventListener('change', async (e) =
     console.error('[CustomFont] فشل تحميل الخط:', err);
     showToast('فشل تحميل الخط: ' + err.message, 'err');
   }
+  e.target.value = '';
 });
 
-/* ---------- Export ---------- */
+/* ---------- التصدير ---------- */
 let exportFormat = 'png';
 document.querySelectorAll('#formatSeg button').forEach(b=>{
   b.addEventListener('click', ()=>{
@@ -1175,19 +1162,11 @@ document.getElementById('quality').addEventListener('input', (e)=>{
 
 document.getElementById('exportBtn').addEventListener('click', async ()=>{
   showToast('⏳ جاري التحضير للتصدير...','warn', 1500);
+  try { if (document.fonts && document.fonts.ready) { await document.fonts.ready; } } catch(e){}
 
-  // انتظار تحميل جميع الخطوط لضمان ظهورها في التصدير
-  try {
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
-  } catch(e){ console.warn('[Export] fonts.ready failed', e); }
-
-  // إعادة رسم إجبارية لضمان تطبيق الخطوط
   canvas.renderAll();
   await new Promise(r => setTimeout(r, 150));
   canvas.renderAll();
-
   canvas.discardActiveObject();
   canvas.renderAll();
 
@@ -1196,11 +1175,7 @@ document.getElementById('exportBtn').addEventListener('click', async ()=>{
   const quality = parseInt(document.getElementById('quality').value)/100;
 
   try {
-    const dataURL = canvas.toDataURL({
-      format: fmt,
-      quality: quality,
-      multiplier: multiplier,
-    });
+    const dataURL = canvas.toDataURL({ format: fmt, quality: quality, multiplier: multiplier });
     const link = document.createElement('a');
     const ext = fmt === 'jpeg' ? 'jpg' : 'png';
     link.download = `design-${Date.now()}.${ext}`;
@@ -1214,7 +1189,7 @@ document.getElementById('exportBtn').addEventListener('click', async ()=>{
   }
 });
 
-/* ---------- Reset ---------- */
+/* ---------- إعادة التعيين ---------- */
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   if(!confirm('هل تريد إعادة تعيين التصميم بالكامل؟')) return;
   canvas.clear();
@@ -1227,6 +1202,8 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 });
 
 setLastAction('جاهز — ارفع صورة أو اختر قالبًا');
+
+} // نهاية initApp
 </script>
 </body>
 </html>
