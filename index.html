@@ -1,6 +1,83 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+  <!-- استدعاء الخطوط -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Tajawal:wght@500;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --accent-color: #00f5d4;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --primary-font: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+    }
+
+    /* التكيف التلقائي لأبعاد الصورة بدون تحديد أبعاد ثابتة */
+    .image-wrapper {
+        width: 100%;
+        position: relative;
+        background-color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .image-wrapper img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+    }
+
+    .card-container {
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        max-width: 450px;
+        width: 100%;
+    }
+
+    .card-content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .badge {
+        align-self: flex-start;
+        background: linear-gradient(135deg, #00f5d4, #00bbf9);
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.5;
+        color: var(--text-main);
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+</style>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>محرر الصور التفاعلي</title>
@@ -1171,4 +1248,17 @@ setLastAction('جاهز — ارفع صورة أو اختر قالبًا');
 } // نهاية initApp
 </script>
 </body>
+  <div class="card-container">
+    <div class="image-wrapper">
+        <img src="https://via.placeholder.com/600x400" alt="صورة الخبر" id="cardImage">
+    </div>
+    <div class="card-content">
+        <span class="badge">تحليل رياضي</span>
+        <h2 class="card-title">رأي في التحكيم أثناء اللعب ضد ريال مدريد</h2>
+        <div class="card-footer">
+            <span>المصدر: قناة التغطية</span>
+            <span>منذ 15 دقيقة</span>
+        </div>
+    </div>
+</div>
 </html>
