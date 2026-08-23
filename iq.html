@@ -33,6 +33,7 @@
     --accent-2:#8a5cff;
     --danger:#ff6b6b;
     --ok:#35d39a;
+    --warn:#ffb547;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -48,10 +49,9 @@
   }
   .app{
     display:grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 360px 1fr;
     height:100vh;
   }
-  /* Sidebar */
   .sidebar{
     background:linear-gradient(180deg,var(--panel),var(--panel-2));
     border-left:1px solid var(--border);
@@ -145,7 +145,37 @@
   .hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
   .divider{height:1px;background:var(--border);margin:10px 0}
 
-  /* Canvas area */
+  .template-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  }
+  .template-card{
+    background:#0e1130;border:1px solid var(--border);
+    border-radius:10px;padding:10px;cursor:pointer;
+    transition:all .15s;text-align:center;
+  }
+  .template-card:hover{
+    border-color:var(--accent);
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(108,140,255,.2);
+  }
+  .template-card .preview{
+    height:60px;border-radius:6px;margin-bottom:6px;
+    display:flex;align-items:flex-end;overflow:hidden;
+    position:relative;
+  }
+  .template-card .name{font-size:12px;font-weight:700;color:#cfd3ff}
+
+  .status-bar{
+    position:fixed;bottom:0;right:0;left:360px;
+    background:rgba(15,18,32,.95);backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+    padding:8px 16px;font-size:12px;color:var(--muted);
+    display:flex;gap:16px;align-items:center;z-index:10;
+  }
+  .status-bar .ok{color:var(--ok)}
+  .status-bar .err{color:var(--danger)}
+  .status-bar .warn{color:var(--warn)}
+
   .stage{
     position:relative;
     display:grid;place-items:center;
@@ -185,19 +215,29 @@
     padding:6px 10px;border-radius:999px;font-size:12px;
   }
 
-  /* Hide fabric upper-canvas resize handles style tweaks */
-  .upper-canvas{cursor:default}
+  .toast{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    background:rgba(23,26,46,.95);backdrop-filter:blur(10px);
+    border:1px solid var(--border);color:var(--text);
+    padding:10px 18px;border-radius:10px;font-size:13px;
+    z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,.4);
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(4px)}
+  .toast.ok{border-color:var(--ok)}
+  .toast.err{border-color:var(--danger)}
+  .toast.warn{border-color:var(--warn)}
 
   @media (max-width: 900px){
     .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
     .sidebar{max-height:45vh}
+    .status-bar{left:0}
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="brand">
       <div class="logo">م</div>
@@ -223,12 +263,93 @@
       <div class="row">
         <button class="btn secondary full" id="applySizeBtn">تطبيق المقاس</button>
       </div>
-      <div class="hint">المقاس الافتراضي 1080×1080. يمكنك تغييره حسب الحاجة.</div>
+      <div class="hint">المقاس الافتراضي 1080×1080.</div>
+    </div>
+
+    <!-- Templates -->
+    <div class="section">
+      <h3><span class="dot"></span>قوالب جاهزة</h3>
+      <div class="template-grid">
+        <div class="template-card" data-template="breaking">
+          <div class="preview" style="background:linear-gradient(90deg,#c0392b,#e74c3c)">
+            <div style="background:#fff;color:#c0392b;padding:2px 8px;font-weight:900;font-size:10px">عاجل</div>
+          </div>
+          <div class="name">شريط عاجل</div>
+        </div>
+        <div class="template-card" data-template="now">
+          <div class="preview" style="background:linear-gradient(90deg,#1e3a8a,#3b82f6)">
+            <div style="background:#fbbf24;color:#1e3a8a;padding:2px 8px;font-weight:900;font-size:10px;border-radius:4px">الآن</div>
+          </div>
+          <div class="name">الآن</div>
+        </div>
+        <div class="template-card" data-template="headline">
+          <div class="preview" style="background:#111827">
+            <div style="background:#dc2626;color:#fff;padding:2px 8px;font-weight:900;font-size:10px">خبر</div>
+          </div>
+          <div class="name">عنوان رئيسي</div>
+        </div>
+        <div class="template-card" data-template="ticker">
+          <div class="preview" style="background:#0f172a;border-top:3px solid #f59e0b">
+            <div style="color:#f59e0b;padding:2px 6px;font-weight:900;font-size:10px">● مباشر</div>
+          </div>
+          <div class="name">شريط مباشر</div>
+        </div>
+      </div>
+      <div class="hint">اختر قالبًا لتطبيقه — جميع عناصره قابلة للتعديل.</div>
+    </div>
+
+    <!-- Template Customization -->
+    <div class="section" id="templateCustom" style="display:none">
+      <h3><span class="dot"></span>تخصيص القالب</h3>
+      <div class="row">
+        <label>عنوان الشريط</label>
+        <input type="text" id="tplBannerText" value="عاجل"/>
+      </div>
+      <div class="row">
+        <label>نص الخبر</label>
+        <textarea id="tplNewsText" placeholder="اكتب عنوان الخبر هنا..."></textarea>
+      </div>
+      <div class="row">
+        <label>لون الشريط</label>
+        <input type="color" id="tplBannerColor" value="#c0392b"/>
+        <label>لون النص</label>
+        <input type="color" id="tplBannerTextColor" value="#ffffff"/>
+      </div>
+      <div class="row">
+        <label>لون خلفية الخبر</label>
+        <input type="color" id="tplNewsBg" value="#111111"/>
+        <label>لون نص الخبر</label>
+        <input type="color" id="tplNewsColor" value="#ffffff"/>
+      </div>
+      <div class="row">
+        <label>موقع الشريط</label>
+        <div class="seg" id="tplBannerPos">
+          <button data-pos="top" class="active">أعلى</button>
+          <button data-pos="bottom">أسفل</button>
+        </div>
+      </div>
+      <div class="row">
+        <label>شكل الحواف</label>
+        <div class="seg" id="tplCornerStyle">
+          <button data-style="sharp" class="active">حادة</button>
+          <button data-style="round">دائرية</button>
+        </div>
+      </div>
+      <div class="row">
+        <label>حجم الخط</label>
+        <input type="range" id="tplFontSize" min="30" max="120" value="60"/>
+      </div>
+      <div class="row">
+        <button class="btn full" id="tplApplyBtn">🔄 تحديث القالب</button>
+      </div>
+      <div class="row">
+        <button class="btn ghost full" id="tplRemoveBtn">🗑️ إزالة القالب</button>
+      </div>
     </div>
 
     <!-- Logo -->
     <div class="section">
-      <h3><span class="dot"></span>اللوغو</h3>
+      <h3><span class="dot"></span>اللوغو / شعار القناة</h3>
       <div class="row">
         <input type="file" id="logoFile" accept="image/*" style="display:none"/>
         <button class="btn full" onclick="document.getElementById('logoFile').click()">🖼️ رفع صورة اللوغو</button>
@@ -236,16 +357,16 @@
       <div class="row">
         <label>الموضع</label>
         <div class="seg" id="logoPos">
-          <button data-pos="tl" class="active">↖ أعلى اليسار</button>
-          <button data-pos="tr">↗ أعلى اليمين</button>
-          <button data-pos="bl">↙ أسفل اليسار</button>
-          <button data-pos="br">↘ أسفل اليمين</button>
+          <button data-pos="tl" class="active">↖</button>
+          <button data-pos="tr">↗</button>
+          <button data-pos="bl">↙</button>
+          <button data-pos="br">↘</button>
         </div>
       </div>
       <div class="row">
         <label>الحجم</label>
-        <input type="range" id="logoScale" min="10" max="100" value="25"/>
-        <span id="logoScaleVal" class="chip">25%</span>
+        <input type="range" id="logoScale" min="5" max="60" value="15"/>
+        <span id="logoScaleVal" class="chip">15%</span>
       </div>
       <div class="row">
         <label>الهامش</label>
@@ -275,8 +396,8 @@
       </div>
       <div class="row">
         <label>الشفافية</label>
-        <input type="range" id="boxOpacity" min="0" max="100" value="80"/>
-        <span id="boxOpacityVal" class="chip">80%</span>
+        <input type="range" id="boxOpacity" min="0" max="100" value="100"/>
+        <span id="boxOpacityVal" class="chip">100%</span>
       </div>
       <div class="row">
         <label>زوايا دائرية</label>
@@ -292,7 +413,6 @@
       <div class="row">
         <button class="btn secondary full" id="applyBoxSize">تطبيق الحجم</button>
       </div>
-      <div class="hint">اسحب المربع لتحريكه، واستخدم المقابض للتكبير والتدوير.</div>
     </div>
 
     <!-- Text -->
@@ -306,11 +426,20 @@
         <select id="fontFamily">
           <option value="Cairo">Cairo (القاهرة)</option>
           <option value="Tajawal">Tajawal (تجوال)</option>
-          <option value="Aref Ruqaa">Aref Ruqaa (عارف رقعة)</option>
+          <option value="Aref Ruqaa" selected>Aref Ruqaa (عارف رقعة)</option>
           <option value="Amiri">Amiri (أميري)</option>
           <option value="Reem Kufi">Reem Kufi (ريم كوفي)</option>
           <option value="Lateef">Lateef (لطيف)</option>
         </select>
+      </div>
+      <div class="row">
+        <label>رفع خط مخصص</label>
+        <input type="file" id="customFontFile" accept=".ttf,.otf,.woff,.woff2" style="display:none"/>
+        <button class="btn secondary full" onclick="document.getElementById('customFontFile').click()">📤 رفع ملف خط (TTF/OTF)</button>
+      </div>
+      <div class="row" id="customFontRow" style="display:none">
+        <label>الخط المخصص</label>
+        <select id="customFontSelect"></select>
       </div>
       <div class="row">
         <label>الحجم</label>
@@ -345,9 +474,8 @@
         <span id="charSpacingVal" class="chip">0</span>
       </div>
       <div class="row">
-        <button class="btn full" id="addTextBtn">✏️ إضافة النص إلى المربع</button>
+        <button class="btn full" id="addTextBtn">✏️ إضافة/تحديث النص</button>
       </div>
-      <div class="hint">سيتم وضع النص داخل المربع المحدد حاليًا (إن وُجد).</div>
     </div>
 
     <!-- Export -->
@@ -374,7 +502,6 @@
     </div>
   </aside>
 
-  <!-- Stage -->
   <main class="stage">
     <div class="topbar">
       <span class="chip" id="sizeChip">1080 × 1080</span>
@@ -388,18 +515,73 @@
   </main>
 </div>
 
+<div class="status-bar">
+  <span id="fabricStatus">⏳ Fabric.js...</span>
+  <span id="fontsStatus">⏳ الخطوط...</span>
+  <span id="lastAction">جاهز</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 /* =========================================================
-   محرر الصور التفاعلي - Fabric.js
+   محرر الصور التفاعلي - Fabric.js (الإصدار المُحسَّن)
    ========================================================= */
 
-const CANVAS_DISPLAY_MAX = 720; // أقصى عرض للعرض على الشاشة
+// ---------- حالة عامة ----------
+const CANVAS_DISPLAY_MAX = 720;
 let CANVAS_W = 1080;
 let CANVAS_H = 1080;
 let DISPLAY_SCALE = 1;
 
-// Fabric canvas
-const el = document.getElementById('c');
+// ---------- أدوات مساعدة ----------
+function showToast(msg, type='ok', duration=2500){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>{ t.className = 'toast ' + type; }, duration);
+}
+function setLastAction(msg){
+  document.getElementById('lastAction').textContent = msg;
+}
+
+// ---------- التحقق من Fabric.js ----------
+if (typeof fabric === 'undefined') {
+  document.getElementById('fabricStatus').innerHTML = '<span class="err">❌ فشل تحميل Fabric.js</span>';
+  showToast('فشل تحميل مكتبة Fabric.js. تحقق من الاتصال بالإنترنت.', 'err', 5000);
+  throw new Error('Fabric.js not loaded');
+} else {
+  document.getElementById('fabricStatus').innerHTML = '<span class="ok">✓ Fabric.js ' + fabric.version + '</span>';
+}
+
+// ---------- التحقق من الخطوط ----------
+async function checkFonts(){
+  const el = document.getElementById('fontsStatus');
+  try {
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+    const required = ['Cairo','Tajawal','Aref Ruqaa','Amiri','Reem Kufi','Lateef'];
+    const loaded = [];
+    const missing = [];
+    for (const f of required) {
+      const ok = document.fonts && document.fonts.check(`16px "${f}"`);
+      (ok ? loaded : missing).push(f);
+    }
+    if (missing.length === 0) {
+      el.innerHTML = '<span class="ok">✓ جميع الخطوط محمّلة ('+loaded.length+')</span>';
+    } else {
+      el.innerHTML = '<span class="warn">⚠ خطوط ناقصة: '+missing.join('، ')+'</span>';
+    }
+  } catch(e){
+    el.innerHTML = '<span class="warn">⚠ تعذر التحقق من الخطوط</span>';
+  }
+}
+checkFonts();
+
+// ---------- Fabric Canvas ----------
+const elCanvas = document.getElementById('c');
 const canvas = new fabric.Canvas('c', {
   preserveObjectStacking: true,
   selection: true,
@@ -411,8 +593,6 @@ function fitCanvasToScreen(){
   const dw = Math.round(CANVAS_W * DISPLAY_SCALE);
   const dh = Math.round(CANVAS_H * DISPLAY_SCALE);
   canvas.setDimensions({ width: dw, height: dh });
-  canvas.setZoom(DISPLAY_SCALE);
-  // إعادة ضبط أبعاد الـ viewport ليبدو 1:1 منطقياً
   canvas.setWidth(dw);
   canvas.setHeight(dh);
   canvas.renderAll();
@@ -424,13 +604,7 @@ function setCanvasLogicalSize(w, h){
   document.getElementById('canvasW').value = CANVAS_W;
   document.getElementById('canvasH').value = CANVAS_H;
   document.getElementById('sizeChip').textContent = `${CANVAS_W} × ${CANVAS_H}`;
-  // إعادة ضبط الخلفية إن وُجدت
-  const bg = canvas.backgroundImage;
-  if(bg){
-    // سنعيد ضبطها بعد تغيير الأبعاد
-  }
   fitCanvasToScreen();
-  // إعادة ضبط موقع اللوغو إن وُجد
   repositionLogo();
   canvas.renderAll();
 }
@@ -438,43 +612,97 @@ function setCanvasLogicalSize(w, h){
 setCanvasLogicalSize(1080, 1080);
 window.addEventListener('resize', fitCanvasToScreen);
 
+/* =========================================================
+   رفع الصور - دالة موحّدة وموثوقة
+   ========================================================= */
+function loadImageFromFile(file, callback){
+  console.log('[ImageLoader] بدء تحميل الملف:', file.name, file.type, file.size, 'bytes');
+
+  if (!file) {
+    console.error('[ImageLoader] الملف فارغ');
+    showToast('الملف غير موجود', 'err');
+    return;
+  }
+  if (!file.type.startsWith('image/')) {
+    console.error('[ImageLoader] نوع الملف غير صالح:', file.type);
+    showToast('الملف ليس صورة صالحة', 'err');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onerror = (err) => {
+    console.error('[ImageLoader] فشل قراءة الملف:', err);
+    showToast('فشل قراءة الملف', 'err');
+  };
+  reader.onabort = () => {
+    console.error('[ImageLoader] تم إلغاء قراءة الملف');
+    showToast('تم إلغاء القراءة', 'err');
+  };
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    console.log('[ImageLoader] تم تحويل الملف إلى DataURL، الطول:', dataUrl.length);
+
+    // استخدام Image()原生 لضمان اكتمال التحميل قبل fabric
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      console.log('[ImageLoader] تم تحميل الصورة بنجاح:', img.width, '×', img.height);
+      try {
+        const fabricImg = new fabric.Image(img, {
+          crossOrigin: 'anonymous',
+        });
+        callback(fabricImg);
+      } catch(e){
+        console.error('[ImageLoader] فشل إنشاء fabric.Image:', e);
+        showToast('فشل معالجة الصورة: ' + e.message, 'err');
+      }
+    };
+    img.onerror = (e) => {
+      console.error('[ImageLoader] فشل تحميل الصورة من DataURL', e);
+      showToast('فشل تحميل الصورة', 'err');
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
 /* ---------- Background ---------- */
 let bgImage = null;
 document.getElementById('bgFile').addEventListener('change', (e)=>{
-  const f = e.target.files[0]; if(!f) return;
-  const reader = new FileReader();
-  reader.onload = (ev)=>{
-    fabric.Image.fromURL(ev.target.result, (img)=>{
-      // تغطية الكانفاس بالكامل (cover)
-      const scaleX = CANVAS_W / img.width;
-      const scaleY = CANVAS_H / img.height;
-      const scale = Math.max(scaleX, scaleY);
-      img.set({
-        scaleX: scale, scaleY: scale,
-        left: CANVAS_W/2, top: CANVAS_H/2,
-        originX: 'center', originY: 'center',
-        selectable: false, evented: false,
-      });
-      canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-        originX:'center', originY:'center',
-        left: CANVAS_W/2, top: CANVAS_H/2,
-      });
-      bgImage = img;
-    }, { crossOrigin: 'anonymous' });
-  };
-  reader.readAsDataURL(f);
+  const f = e.target.files && e.target.files[0];
+  if (!f) { console.warn('[BG] لم يتم اختيار ملف'); return; }
+  loadImageFromFile(f, (fabricImg) => {
+    const scaleX = CANVAS_W / fabricImg.width;
+    const scaleY = CANVAS_H / fabricImg.height;
+    const scale = Math.max(scaleX, scaleY);
+    fabricImg.set({
+      scaleX: scale, scaleY: scale,
+      left: CANVAS_W/2, top: CANVAS_H/2,
+      originX: 'center', originY: 'center',
+      selectable: false, evented: false,
+    });
+    canvas.setBackgroundImage(fabricImg, () => {
+      canvas.renderAll();
+      bgImage = fabricImg;
+      showToast('✓ تم رفع صورة الخلفية', 'ok');
+      setLastAction('تم رفع خلفية جديدة');
+    }, {
+      originX:'center', originY:'center',
+      left: CANVAS_W/2, top: CANVAS_H/2,
+    });
+  });
 });
 
 document.getElementById('applySizeBtn').addEventListener('click', ()=>{
   const w = parseInt(document.getElementById('canvasW').value);
   const h = parseInt(document.getElementById('canvasH').value);
   setCanvasLogicalSize(w, h);
+  showToast('✓ تم تطبيق المقاس: '+CANVAS_W+'×'+CANVAS_H, 'ok');
 });
 
 /* ---------- Logo ---------- */
 let logoImage = null;
 let logoPos = 'tl';
-const logoPadding = 40;
 
 function repositionLogo(){
   if(!logoImage) return;
@@ -491,29 +719,27 @@ function repositionLogo(){
 }
 
 document.getElementById('logoFile').addEventListener('change', (e)=>{
-  const f = e.target.files[0]; if(!f) return;
-  const reader = new FileReader();
-  reader.onload = (ev)=>{
-    fabric.Image.fromURL(ev.target.result, (img)=>{
-      // إزالة لوغو قديم
-      if(logoImage){ canvas.remove(logoImage); }
-      const pct = parseInt(document.getElementById('logoScale').value)/100;
-      const targetW = CANVAS_W * pct;
-      const scale = targetW / img.width;
-      img.set({
-        scaleX: scale, scaleY: scale,
-        left: 0, top: 0,
-        cornerColor: '#6c8cff',
-        cornerStyle: 'circle',
-        transparentCorners: false,
-        borderColor: '#6c8cff',
-      });
-      canvas.add(img);
-      logoImage = img;
-      repositionLogo();
-    }, { crossOrigin: 'anonymous' });
-  };
-  reader.readAsDataURL(f);
+  const f = e.target.files && e.target.files[0];
+  if (!f) { console.warn('[Logo] لم يتم اختيار ملف'); return; }
+  loadImageFromFile(f, (fabricImg) => {
+    if(logoImage){ canvas.remove(logoImage); }
+    const pct = parseInt(document.getElementById('logoScale').value)/100;
+    const targetW = CANVAS_W * pct;
+    const scale = targetW / fabricImg.width;
+    fabricImg.set({
+      scaleX: scale, scaleY: scale,
+      left: 0, top: 0,
+      cornerColor: '#6c8cff',
+      cornerStyle: 'circle',
+      transparentCorners: false,
+      borderColor: '#6c8cff',
+    });
+    canvas.add(fabricImg);
+    logoImage = fabricImg;
+    repositionLogo();
+    showToast('✓ تم رفع اللوغو', 'ok');
+    setLastAction('تم رفع لوغو جديد');
+  });
 });
 
 document.querySelectorAll('#logoPos button').forEach(b=>{
@@ -536,12 +762,166 @@ document.getElementById('logoScale').addEventListener('input', (e)=>{
   }
 });
 
-document.getElementById('logoMargin').addEventListener('input', ()=>{
-  repositionLogo();
-});
+document.getElementById('logoMargin').addEventListener('input', ()=>{ repositionLogo(); });
 
 document.getElementById('removeLogoBtn').addEventListener('click', ()=>{
-  if(logoImage){ canvas.remove(logoImage); logoImage = null; }
+  if(logoImage){ canvas.remove(logoImage); logoImage = null; showToast('تم إزالة اللوغو','ok'); }
+});
+
+/* =========================================================
+   قوالب الأخبار العاجلة
+   ========================================================= */
+let templateObjects = []; // العناصر التي ينشئها القالب
+let currentTemplateType = null;
+
+function clearTemplate(){
+  templateObjects.forEach(o => { if (canvas.getObjects().includes(o)) canvas.remove(o); });
+  templateObjects = [];
+  currentTemplateType = null;
+  document.getElementById('templateCustom').style.display = 'none';
+  canvas.renderAll();
+}
+
+function applyNewsTemplate(type){
+  clearTemplate();
+  currentTemplateType = type;
+
+  const bannerColor = document.getElementById('tplBannerColor').value;
+  const bannerTextColor = document.getElementById('tplBannerTextColor').value;
+  const newsBg = document.getElementById('tplNewsBg').value;
+  const newsColor = document.getElementById('tplNewsColor').value;
+  const bannerText = document.getElementById('tplBannerText').value || 'عاجل';
+  const newsText = document.getElementById('tplNewsText').value || 'عنوان الخبر الرئيسي يظهر هنا';
+  const bannerPos = document.getElementById('tplBannerPos').querySelector('.active').dataset.pos;
+  const cornerStyle = document.getElementById('tplCornerStyle').querySelector('.active').dataset.style;
+  const fontSize = parseInt(document.getElementById('tplFontSize').value);
+  const rx = cornerStyle === 'round' ? 20 : 0;
+
+  // أبعاد القالب
+  const bannerH = 90;
+  const newsH = 200;
+  const bannerY = bannerPos === 'top' ? 0 : CANVAS_H - bannerH;
+  const newsY = bannerPos === 'top' ? bannerH : CANVAS_H - bannerH - newsH;
+
+  // 1) شريط العنوان (عاجل/الآن)
+  const banner = new fabric.Rect({
+    left: 0, top: bannerY,
+    width: CANVAS_W, height: bannerH,
+    fill: bannerColor,
+    rx: rx, ry: rx,
+    selectable: true,
+    hasControls: true,
+  });
+  banner._tplRole = 'banner';
+
+  const bannerLabel = new fabric.Textbox(bannerText, {
+    left: CANVAS_W - 40, top: bannerY + bannerH/2,
+    originX: 'right', originY: 'center',
+    fontSize: 54,
+    fontWeight: 'bold',
+    fontFamily: 'Aref Ruqaa',
+    fill: bannerTextColor,
+    direction: 'rtl',
+    selectable: true,
+    width: CANVAS_W - 80,
+  });
+  bannerLabel._tplRole = 'bannerLabel';
+
+  // 2) مربع نص الخبر
+  const newsBox = new fabric.Rect({
+    left: 0, top: newsY,
+    width: CANVAS_W, height: newsH,
+    fill: newsBg,
+    rx: rx, ry: rx,
+    opacity: 0.92,
+    selectable: true,
+  });
+  newsBox._tplRole = 'newsBox';
+
+  const newsTextObj = new fabric.Textbox(newsText, {
+    left: CANVAS_W/2, top: newsY + newsH/2,
+    originX: 'center', originY: 'center',
+    width: CANVAS_W - 120,
+    fontSize: fontSize,
+    fontWeight: 'bold',
+    fontFamily: 'Cairo',
+    fill: newsColor,
+    textAlign: 'center',
+    direction: 'rtl',
+    lineHeight: 1.3,
+    selectable: true,
+  });
+  newsTextObj._tplRole = 'newsText';
+
+  // 3) خط فاصل زخرفي
+  const separator = new fabric.Rect({
+    left: 40, top: bannerPos === 'top' ? bannerY + bannerH - 6 : newsY + newsH,
+    width: CANVAS_W - 80, height: 6,
+    fill: bannerColor,
+    selectable: true,
+  });
+  separator._tplRole = 'separator';
+
+  [banner, newsBox, separator, bannerLabel, newsTextObj].forEach(o => {
+    o.cornerColor = '#6c8cff';
+    o.cornerStyle = 'circle';
+    o.transparentCorners = false;
+    o.borderColor = '#6c8cff';
+    canvas.add(o);
+    templateObjects.push(o);
+  });
+
+  document.getElementById('templateCustom').style.display = 'block';
+  canvas.renderAll();
+  showToast('✓ تم تطبيق القالب', 'ok');
+  setLastAction('تم تطبيق قالب: ' + ({breaking:'عاجل',now:'الآن',headline:'عنوان رئيسي',ticker:'مباير'}[type] || type));
+}
+
+// ربط بطاقات القوالب
+document.querySelectorAll('.template-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const type = card.dataset.template;
+    // ضبط الألوان الافتراضية حسب القالب
+    const presets = {
+      breaking: { banner:'#c0392b', bannerText:'#ffffff', newsBg:'#111111', newsColor:'#ffffff', label:'عاجل' },
+      now:      { banner:'#1e3a8a', bannerText:'#fbbf24', newsBg:'#0f172a', newsColor:'#ffffff', label:'الآن' },
+      headline: { banner:'#dc2626', bannerText:'#ffffff', newsBg:'#1f2937', newsColor:'#ffffff', label:'خبر' },
+      ticker:   { banner:'#f59e0b', bannerText:'#0f172a', newsBg:'#0f172a', newsColor:'#f59e0b', label:'● مباشر' },
+    };
+    const p = presets[type];
+    document.getElementById('tplBannerColor').value = p.banner;
+    document.getElementById('tplBannerTextColor').value = p.bannerText;
+    document.getElementById('tplNewsBg').value = p.newsBg;
+    document.getElementById('tplNewsColor').value = p.newsColor;
+    document.getElementById('tplBannerText').value = p.label;
+    applyNewsTemplate(type);
+  });
+});
+
+// تحديث القالب
+document.getElementById('tplApplyBtn').addEventListener('click', () => {
+  if (!currentTemplateType) { showToast('لا يوجد قالب مطبّق','warn'); return; }
+  applyNewsTemplate(currentTemplateType);
+});
+document.getElementById('tplRemoveBtn').addEventListener('click', () => {
+  clearTemplate();
+  showToast('تم إزالة القالب','ok');
+});
+
+// تبديل موقع الشريط والحواف
+document.querySelectorAll('#tplBannerPos button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#tplBannerPos button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    if (currentTemplateType) applyNewsTemplate(currentTemplateType);
+  });
+});
+document.querySelectorAll('#tplCornerStyle button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#tplCornerStyle button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    if (currentTemplateType) applyNewsTemplate(currentTemplateType);
+  });
 });
 
 /* ---------- Design Box ---------- */
@@ -579,26 +959,23 @@ function createBox(){
 
 document.getElementById('addBoxBtn').addEventListener('click', createBox);
 
-// عند اختيار أي كائن، إذا كان مربع نخزنه كـ activeBox
 canvas.on('selection:created', (opt)=>{
   const o = opt.selected[0];
-  if(o && o.type === 'rect') activeBox = o;
+  if(o && o.type === 'rect' && !o._tplRole) activeBox = o;
+  syncBoxUI();
 });
 canvas.on('selection:updated', (opt)=>{
   const o = opt.selected[0];
-  if(o && o.type === 'rect') activeBox = o;
+  if(o && o.type === 'rect' && !o._tplRole) activeBox = o;
+  syncBoxUI();
 });
-
-// تحديث قيم المربع عند تحديده
-canvas.on('selection:created', syncBoxUI);
-canvas.on('selection:updated', syncBoxUI);
 canvas.on('object:modified', syncBoxUI);
 canvas.on('object:scaling', syncBoxUI);
 canvas.on('object:moving', syncBoxUI);
 
 function syncBoxUI(){
   const o = canvas.getActiveObject();
-  if(!o || o.type !== 'rect') return;
+  if(!o || o.type !== 'rect' || o._tplRole) return;
   activeBox = o;
   const w = Math.round(o.width * o.scaleX);
   const h = Math.round(o.height * o.scaleY);
@@ -616,18 +993,14 @@ function syncBoxUI(){
 
 function rgbToHex(c){
   if(!c) return null;
-  if(typeof c === 'string' && c.startsWith('#')) return c;
+  if(typeof c === 'string' && c.startsWith('#')) return c.length===7?c:null;
   const m = String(c).match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   if(!m) return null;
   const to = n => ('0'+parseInt(n).toString(16)).slice(-2);
   return '#' + to(m[1]) + to(m[2]) + to(m[3]);
 }
 
-// ربط عناصر التحكم بالمربع النشط
-function bindBoxControl(id, apply){
-  document.getElementById(id).addEventListener('input', apply);
-}
-
+function bindBoxControl(id, apply){ document.getElementById(id).addEventListener('input', apply); }
 bindBoxControl('boxFill', (e)=>{ if(activeBox){ activeBox.set('fill', e.target.value); canvas.renderAll(); } });
 bindBoxControl('boxStroke', (e)=>{ if(activeBox){ activeBox.set('stroke', e.target.value); canvas.renderAll(); } });
 bindBoxControl('boxStrokeW', (e)=>{
@@ -650,11 +1023,7 @@ document.getElementById('applyBoxSize').addEventListener('click', ()=>{
   if(!activeBox){ createBox(); return; }
   const w = parseInt(document.getElementById('boxW').value)||600;
   const h = parseInt(document.getElementById('boxH').value)||300;
-  // إعادة ضبط scale وتطبيق الحجم مباشرة
-  activeBox.set({
-    width: w, height: h,
-    scaleX: 1, scaleY: 1,
-  });
+  activeBox.set({ width: w, height: h, scaleX: 1, scaleY: 1 });
   activeBox.setCoords();
   canvas.renderAll();
 });
@@ -673,9 +1042,20 @@ document.getElementById('fontColor').addEventListener('input', (e)=>{
 document.getElementById('fontWeight').addEventListener('change', (e)=>{
   if(currentTextObj){ currentTextObj.set('fontWeight', e.target.value); canvas.renderAll(); }
 });
+
+function applyFontToCurrentText(fontName){
+  if(currentTextObj){
+    currentTextObj.set('fontFamily', fontName);
+    canvas.renderAll();
+  }
+}
 document.getElementById('fontFamily').addEventListener('change', (e)=>{
-  if(currentTextObj){ currentTextObj.set('fontFamily', e.target.value); canvas.renderAll(); }
+  applyFontToCurrentText(e.target.value);
 });
+document.getElementById('customFontSelect').addEventListener('change', (e)=>{
+  if (e.target.value) applyFontToCurrentText(e.target.value);
+});
+
 document.getElementById('lineHeight').addEventListener('input', (e)=>{
   const v = parseInt(e.target.value)/100;
   document.getElementById('lineHeightVal').textContent = v.toFixed(2);
@@ -692,73 +1072,92 @@ document.querySelectorAll('#alignSeg button').forEach(b=>{
     document.querySelectorAll('#alignSeg button').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
     currentAlign = b.dataset.align;
-    if(currentTextObj){
-      currentTextObj.set('textAlign', currentAlign);
-      canvas.renderAll();
-    }
+    if(currentTextObj){ currentTextObj.set('textAlign', currentAlign); canvas.renderAll(); }
   });
 });
 
 document.getElementById('addTextBtn').addEventListener('click', ()=>{
   const txt = document.getElementById('textInput').value.trim();
-  if(!txt) return;
+  if(!txt) { showToast('اكتب نصًا أولًا','warn'); return; }
 
   const fontSize = parseInt(document.getElementById('fontSize').value)||60;
   const fontColor = document.getElementById('fontColor').value;
   const fontWeight = document.getElementById('fontWeight').value;
-  const fontFamily = document.getElementById('fontFamily').value;
+  // دمج الخطوط المخصصة
+  const customSel = document.getElementById('customFontSelect');
+  let fontFamily = document.getElementById('fontFamily').value;
+  if (customSel.style.display !== 'none' && customSel.value) {
+    fontFamily = customSel.value;
+  }
   const lineHeight = parseInt(document.getElementById('lineHeight').value)/100;
   const charSpacing = parseInt(document.getElementById('charSpacing').value);
 
-  // تحديد موضع النص داخل المربع النشط إن وُجد
   let left = CANVAS_W/2, top = CANVAS_H/2, width = CANVAS_W*0.8;
-  if(activeBox){
+  if(activeBox && !activeBox._tplRole){
     const b = activeBox;
-    const bx = b.left;
-    const by = b.top;
-    const bw = b.width * b.scaleX;
-    const bh = b.height * b.scaleY;
-    left = bx + bw/2;
-    top = by + bh/2;
-    width = bw * 0.9;
+    left = b.left + (b.width * b.scaleX)/2;
+    top = b.top + (b.height * b.scaleY)/2;
+    width = (b.width * b.scaleX) * 0.9;
   }
 
-  // إذا كان هناك كائن نص محدد مسبقًا، نحدّثه
   if(currentTextObj && canvas.getObjects().includes(currentTextObj)){
     currentTextObj.set({
-      text: txt,
-      fontSize, fill: fontColor, fontWeight, fontFamily,
-      lineHeight, charSpacing, textAlign: currentAlign,
-      width,
+      text: txt, fontSize, fill: fontColor, fontWeight, fontFamily,
+      lineHeight, charSpacing, textAlign: currentAlign, width,
     });
     currentTextObj.initDimensions();
     currentTextObj.setCoords();
     canvas.setActiveObject(currentTextObj);
     canvas.renderAll();
+    showToast('✓ تم تحديث النص','ok');
     return;
   }
 
   const t = new fabric.Textbox(txt, {
     left, top,
     originX: 'center', originY: 'center',
-    width,
-    fontSize,
-    fill: fontColor,
-    fontWeight,
-    fontFamily,
-    lineHeight,
-    charSpacing,
-    textAlign: currentAlign,
+    width, fontSize, fill: fontColor, fontWeight, fontFamily,
+    lineHeight, charSpacing, textAlign: currentAlign,
     direction: 'rtl',
-    cornerColor: '#6c8cff',
-    cornerStyle: 'circle',
-    transparentCorners: false,
-    borderColor: '#6c8cff',
+    cornerColor: '#6c8cff', cornerStyle: 'circle',
+    transparentCorners: false, borderColor: '#6c8cff',
   });
   canvas.add(t);
   canvas.setActiveObject(t);
   currentTextObj = t;
   canvas.renderAll();
+  showToast('✓ تم إضافة النص','ok');
+});
+
+/* ---------- رفع خط مخصص ---------- */
+let customFontCounter = 0;
+document.getElementById('customFontFile').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  console.log('[CustomFont] رفع خط:', f.name, f.size);
+  try {
+    const fontName = 'CustomFont_' + (++customFontCounter) + '_' + f.name.replace(/\.[^.]+$/,'').replace(/\s+/g,'_');
+    const url = URL.createObjectURL(f);
+    const face = new FontFace(fontName, `url(${url})`);
+    await face.load();
+    document.fonts.add(face);
+    console.log('[CustomFont] تم تحميل الخط:', fontName);
+
+    const sel = document.getElementById('customFontSelect');
+    const opt = document.createElement('option');
+    opt.value = fontName;
+    opt.textContent = f.name;
+    sel.appendChild(opt);
+    sel.value = fontName;
+    document.getElementById('customFontRow').style.display = 'flex';
+
+    showToast('✓ تم تحميل الخط: ' + f.name, 'ok');
+    setLastAction('تم رفع خط مخصص');
+    checkFonts();
+  } catch(err){
+    console.error('[CustomFont] فشل تحميل الخط:', err);
+    showToast('فشل تحميل الخط: ' + err.message, 'err');
+  }
 });
 
 /* ---------- Export ---------- */
@@ -774,26 +1173,45 @@ document.getElementById('quality').addEventListener('input', (e)=>{
   document.getElementById('qualityVal').textContent = (parseInt(e.target.value)/100).toFixed(2);
 });
 
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  // إلغاء التحديد قبل التصدير
+document.getElementById('exportBtn').addEventListener('click', async ()=>{
+  showToast('⏳ جاري التحضير للتصدير...','warn', 1500);
+
+  // انتظار تحميل جميع الخطوط لضمان ظهورها في التصدير
+  try {
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+  } catch(e){ console.warn('[Export] fonts.ready failed', e); }
+
+  // إعادة رسم إجبارية لضمان تطبيق الخطوط
+  canvas.renderAll();
+  await new Promise(r => setTimeout(r, 150));
+  canvas.renderAll();
+
   canvas.discardActiveObject();
   canvas.renderAll();
 
-  const multiplier = 1 / DISPLAY_SCALE; // لاستعادة المقاس الأصلي
+  const multiplier = 1 / DISPLAY_SCALE;
   const fmt = exportFormat;
   const quality = parseInt(document.getElementById('quality').value)/100;
 
-  const dataURL = canvas.toDataURL({
-    format: fmt,
-    quality: quality,
-    multiplier: multiplier,
-  });
-
-  const link = document.createElement('a');
-  const ext = fmt === 'jpeg' ? 'jpg' : 'png';
-  link.download = `design-${Date.now()}.${ext}`;
-  link.href = dataURL;
-  link.click();
+  try {
+    const dataURL = canvas.toDataURL({
+      format: fmt,
+      quality: quality,
+      multiplier: multiplier,
+    });
+    const link = document.createElement('a');
+    const ext = fmt === 'jpeg' ? 'jpg' : 'png';
+    link.download = `design-${Date.now()}.${ext}`;
+    link.href = dataURL;
+    link.click();
+    showToast('✓ تم التصدير بنجاح','ok');
+    setLastAction('تم التصدير: '+link.download);
+  } catch(e){
+    console.error('[Export] فشل التصدير:', e);
+    showToast('فشل التصدير: ' + e.message, 'err');
+  }
 });
 
 /* ---------- Reset ---------- */
@@ -802,11 +1220,13 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   canvas.clear();
   canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
   bgImage = null; logoImage = null; activeBox = null; currentTextObj = null;
+  templateObjects = []; currentTemplateType = null;
+  document.getElementById('templateCustom').style.display = 'none';
+  showToast('✓ تم إعادة التعيين','ok');
+  setLastAction('تم إعادة التعيين');
 });
 
-/* ---------- Initial hint rect (اختياري) ---------- */
-// لا نضيف أي شيء افتراضيًا — المستخدم يبدأ من الصفر.
-
+setLastAction('جاهز — ارفع صورة أو اختر قالبًا');
 </script>
 </body>
 </html>
