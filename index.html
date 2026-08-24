@@ -28,8 +28,7 @@
     --text:#e9ecff; --muted:#8f96c4; --muted-2:#6a719e;
     --accent:#6d8bff; --accent-2:#9a63ff; --accent-soft:rgba(109,139,255,.14);
     --ok:#2fd39a; --err:#ff6b6b; --warn:#ffb547;
-    --radius:14px;
-    --shadow:0 18px 50px rgba(0,0,0,.45);
+    --radius:14px; --shadow:0 18px 50px rgba(0,0,0,.45);
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -51,7 +50,7 @@
     position:fixed; inset:0; z-index:3000;
     background:rgba(9,11,24,.94); backdrop-filter:blur(6px);
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
-    transition:opacity .4s; 
+    transition:opacity .4s;
   }
   .loading-overlay.hidden{opacity:0; pointer-events:none; visibility:hidden}
   .spinner{
@@ -60,11 +59,11 @@
     animation:spin .8s linear infinite;
   }
   @keyframes spin{to{transform:rotate(360deg)}}
-  .loading-overlay p{color:var(--muted); font-size:14px; margin:0}
-  .loading-overlay .brand-mini{font-weight:800; font-size:18px; letter-spacing:.3px}
+  .loading-overlay p{color:var(--muted); font-size:14px; margin:0; text-align:center; max-width:80%}
+  .loading-overlay .brand-mini{font-weight:800; font-size:18px}
 
-  /* ═══════════ التخطيط العام ═══════════ */
-  .app{display:grid; grid-template-columns:372px 1fr; height:100vh}
+  /* ═══════════ التخطيط ═══════════ */
+  .app{display:grid; grid-template-columns:380px 1fr; height:100vh}
   .sidebar{
     background:linear-gradient(180deg,var(--panel),#101430);
     border-left:1px solid var(--border-soft);
@@ -73,10 +72,9 @@
   .stage{
     position:relative; display:flex; flex-direction:column;
     align-items:center; justify-content:center;
-    overflow:auto; padding:56px 24px 60px;
+    overflow:auto; padding:58px 24px 62px;
   }
 
-  /* ═══════════ رأس الشريط الجانبي ═══════════ */
   .brand{display:flex; align-items:center; gap:12px; padding:4px 6px 16px}
   .brand .logo{
     width:44px;height:44px;border-radius:12px; flex:none;
@@ -87,12 +85,14 @@
   .brand h1{font-size:17px; margin:0}
   .brand p{margin:2px 0 0; color:var(--muted); font-size:11.5px}
 
-  /* ═══════════ الأقسام ═══════════ */
   .section{
     background:rgba(255,255,255,.02);
     border:1px solid var(--border-soft);
-    border-radius:var(--radius);
-    padding:14px; margin-bottom:12px;
+    border-radius:var(--radius); padding:14px; margin-bottom:12px;
+  }
+  .section.ai{
+    border:1px solid rgba(154,99,255,.4);
+    background:linear-gradient(160deg, rgba(154,99,255,.07), rgba(109,139,255,.04));
   }
   .section h3{
     margin:0 0 12px; font-size:13.5px; color:#d4d8ff;
@@ -101,6 +101,10 @@
   .section h3 .ico{
     width:26px;height:26px;border-radius:8px; flex:none;
     background:var(--accent-soft); display:grid;place-items:center; font-size:13px;
+  }
+  .badge-ai{
+    font-size:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff; border-radius:999px; padding:2px 8px; margin-right:auto;
   }
   .row{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap}
   .row:last-child{margin-bottom:0}
@@ -111,7 +115,7 @@
     padding:8px 10px; font-family:inherit; font-size:13px; outline:none;
     transition:border-color .15s, box-shadow .15s;
   }
-  .row textarea{min-height:72px; resize:vertical; line-height:1.7}
+  .row textarea{min-height:64px; resize:vertical; line-height:1.7}
   .row input:focus,.row select:focus,.row textarea:focus{
     border-color:var(--accent); box-shadow:0 0 0 3px rgba(109,139,255,.16);
   }
@@ -126,8 +130,8 @@
     font-size:11px; white-space:nowrap;
   }
   .hint{font-size:11px; color:var(--muted-2); line-height:1.7; margin-top:8px}
+  .hint b{color:var(--muted)}
 
-  /* ═══════════ الأزرار ═══════════ */
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:7px;
     border:none; border-radius:10px; padding:9px 14px;
@@ -138,10 +142,10 @@
   }
   .btn:hover{transform:translateY(-1px)}
   .btn:active{transform:translateY(0)}
-  .btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none}
   .btn.secondary{background:#222852; border:1px solid var(--border); box-shadow:none; color:#dbe0ff}
   .btn.ghost{background:transparent; border:1px dashed var(--border); box-shadow:none; color:var(--muted)}
-  .btn.danger{background:linear-gradient(135deg,#ff6b6b,#ff8e53); box-shadow:0 8px 20px rgba(255,107,107,.25)}
+  .btn.danger{background:linear-gradient(135deg,#ff6b6b,#ff8e53); box-shadow:0 8px 20px rgba(255,107,107,.22)}
   .btn.full{width:100%}
   .seg{
     display:inline-flex; background:var(--field); border:1px solid var(--border);
@@ -154,7 +158,6 @@
   }
   .seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff}
 
-  /* ═══════════ بطاقات القوالب ═══════════ */
   .template-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
   .template-card{
     background:var(--field); border:1px solid var(--border);
@@ -163,16 +166,22 @@
   }
   .template-card:hover{transform:translateY(-2px); border-color:var(--accent); box-shadow:0 10px 24px rgba(109,139,255,.18)}
   .template-card.active{border-color:var(--accent); box-shadow:0 0 0 2px rgba(109,139,255,.35)}
-  .template-card .preview{
-    height:56px; border-radius:8px; margin-bottom:7px; overflow:hidden;
-    position:relative; display:flex; background:#0a0d1f;
-  }
+  .template-card .preview{height:56px; border-radius:8px; margin-bottom:7px; overflow:hidden; position:relative; background:#0a0d1f}
   .template-card .name{font-size:11.5px; font-weight:700; color:#c9ceff}
   .pv-bar{position:absolute; right:0; left:0; display:flex; align-items:center; padding:0 8px; height:18px}
   .pv-tag{font-size:9px; font-weight:900; padding:1px 7px; border-radius:3px}
   .pv-body{position:absolute; right:8px; left:8px; height:8px; border-radius:3px; opacity:.85}
 
-  /* ═══════════ منصة الرسم ═══════════ */
+  /* نتائج الذكاء الاصطناعي */
+  .ai-results{display:flex; flex-direction:column; gap:6px; margin-top:8px}
+  .ai-chip{
+    background:var(--field); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; padding:8px 10px; font-family:inherit; font-size:12.5px;
+    cursor:pointer; text-align:right; transition:all .15s; line-height:1.6;
+  }
+  .ai-chip:hover{border-color:var(--accent-2); background:rgba(154,99,255,.12)}
+
+  /* المنصة */
   .stage-toolbar{
     position:absolute; top:12px; right:16px; left:16px; z-index:20;
     display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
@@ -206,7 +215,6 @@
   .canvas-inner{background:#fff; border-radius:8px; overflow:hidden}
   .canvas-container{display:block !important}
 
-  /* ═══════════ شريط الحالة ═══════════ */
   .status-bar{
     position:fixed; bottom:0; right:0; left:0; z-index:50;
     display:flex; gap:18px; align-items:center; flex-wrap:wrap;
@@ -217,13 +225,12 @@
   .status-bar .ok{color:var(--ok)} .status-bar .err{color:var(--err)} .status-bar .warn{color:var(--warn)}
   .status-bar .sep{width:1px; height:14px; background:var(--border)}
 
-  /* ═══════════ التنبيهات ═══════════ */
   .toast{
     position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-8px);
     z-index:4000; background:rgba(17,21,44,.96); backdrop-filter:blur(10px);
     border:1px solid var(--border); color:var(--text);
     padding:11px 20px; border-radius:12px; font-size:13px; font-weight:600;
-    box-shadow:0 14px 40px rgba(0,0,0,.45);
+    box-shadow:0 14px 40px rgba(0,0,0,.45); max-width:90%; text-align:center;
     opacity:0; pointer-events:none; transition:opacity .25s, transform .25s;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
@@ -238,7 +245,7 @@
 </head>
 <body>
 
-<!-- ═══════════ شاشة التحميل ═══════════ -->
+<!-- شاشة التحميل -->
 <div class="loading-overlay" id="loadingOverlay">
   <div style="font-size:40px">🎨</div>
   <div class="brand-mini">استوديو التصميم</div>
@@ -259,7 +266,7 @@
       </div>
     </div>
 
-    <!-- الخلفية -->
+    <!-- ═══ الخلفية ═══ -->
     <div class="section">
       <h3><span class="ico">🖼️</span> الصورة الأساسية (الخلفية)</h3>
       <div class="row">
@@ -267,9 +274,23 @@
         <button class="btn full app-btn" data-click="bgFile">📷 رفع صورة الخلفية</button>
       </div>
       <div class="row">
-        <label>لون الخلفية</label>
+        <button class="btn secondary full" id="fitToBgBtn">📐 ملاءمة اللوحة مع حجم الصورة</button>
+      </div>
+      <div class="row">
+        <label>لون اللوحة</label>
         <input type="color" id="bgColor" value="#ffffff"/>
         <button class="btn ghost" id="removeBgBtn" title="إزالة صورة الخلفية">🗑️</button>
+      </div>
+      <div class="row">
+        <label>مقاسات جاهزة</label>
+        <select id="presetSizes">
+          <option value="">اختر مقاسًا…</option>
+          <option value="1080x1080">مربع — 1080×1080</option>
+          <option value="1080x1920">ستوري — 1080×1920</option>
+          <option value="1080x1350">إنستغرام — 1080×1350</option>
+          <option value="1920x1080">شاشة عريضة — 1920×1080</option>
+          <option value="1600x900">منشور عريض — 1600×900</option>
+        </select>
       </div>
       <div class="row">
         <label>العرض</label>
@@ -278,12 +299,60 @@
         <input type="number" id="canvasH" value="1080" min="100" max="4096"/>
       </div>
       <div class="row">
-        <button class="btn secondary full" id="applySizeBtn">📐 تطبيق مقاس اللوحة</button>
+        <button class="btn secondary full" id="applySizeBtn">✔ تطبيق مقاس اللوحة</button>
       </div>
-      <div class="hint">💡 يمكنك أيضًا سحب صورة وإفلاتها مباشرة فوق لوحة التصميم.</div>
+      <div class="row">
+        <label>السطوع</label>
+        <input type="range" id="bgBright" min="-100" max="100" value="0"/>
+        <span class="chip" id="bgBrightVal">0</span>
+      </div>
+      <div class="row">
+        <label>التباين</label>
+        <input type="range" id="bgContrast" min="-100" max="100" value="0"/>
+        <span class="chip" id="bgContrastVal">0</span>
+      </div>
+      <div class="row">
+        <label>التشبع</label>
+        <input type="range" id="bgSat" min="-100" max="100" value="0"/>
+        <span class="chip" id="bgSatVal">0</span>
+      </div>
+      <div class="row">
+        <button class="btn ghost full" id="bgFiltersReset">↩ إعادة ضبط الفلاتر</button>
+      </div>
+      <div class="hint">💡 تُعرض الصورة المرفوعة <b>بحجمها الأصلي 1:1</b> دون أي تصغير أو تمديد. يمكنك سحب لوحة التصميم أو تغيير مقاسها حسب الحاجة، أو استخدام زر «ملاءمة اللوحة».</div>
     </div>
 
-    <!-- القوالب -->
+    <!-- ═══ أدوات الذكاء الاصطناعي ═══ -->
+    <div class="section ai">
+      <h3><span class="ico">🤖</span> أدوات الذكاء الاصطناعي <span class="badge-ai">AI</span></h3>
+
+      <div class="row">
+        <textarea id="aiPrompt" placeholder="صِف الصورة التي تريدها… مثال: خلفية استوديو أخبار احترافية بألوان أزرق داكن وأضواء خافتة"></textarea>
+      </div>
+      <div class="row">
+        <label>أبعاد التوليد</label>
+        <select id="aiSize">
+          <option value="1080x1080">1080 × 1080</option>
+          <option value="1920x1080">1920 × 1080</option>
+          <option value="1080x1920">1080 × 1920</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn full" id="aiGenBtn">🪄 توليد صورة بالذكاء الاصطناعي</button>
+      </div>
+      <div class="row">
+        <button class="btn ghost full" id="aiSurpriseBtn">🎲 اقتراح وصف عشوائي</button>
+      </div>
+
+      <div class="row" style="margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+        <input type="text" id="aiTopic" placeholder="موضوع الخبر… مثال: أسعار النفط"/>
+        <button class="btn secondary" id="aiHeadlineBtn">✨ اقتراح عناوين</button>
+      </div>
+      <div class="ai-results" id="aiResults"></div>
+      <div class="hint">🌐 تعتمد الأدوات على خدمات ذكاء اصطناعي مجانية عبر الإنترنت وقد تستغرق عدة ثوانٍ. اضغط على أي عنوان مقترح لاعتماده في نص الخبر.</div>
+    </div>
+
+    <!-- ═══ القوالب ═══ -->
     <div class="section">
       <h3><span class="ico">📺</span> قوالب الأخبار الجاهزة</h3>
       <div class="template-grid">
@@ -323,9 +392,12 @@
           <div class="name">شريط مباشر</div>
         </div>
       </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn secondary full" id="addClockBtn">🕒 إضافة / تحديث الساعة والتاريخ</button>
+      </div>
     </div>
 
-    <!-- تخصيص القالب -->
+    <!-- ═══ تخصيص القالب ═══ -->
     <div class="section" id="templateCustom" style="display:none">
       <h3><span class="ico">🎛️</span> تخصيص القالب</h3>
       <div class="row">
@@ -383,12 +455,12 @@
       </div>
     </div>
 
-    <!-- اللوغو -->
+    <!-- ═══ اللوغو ═══ -->
     <div class="section">
-      <h3><span class="ico">🏷️</span> اللوغو / شعار القناة</h3>
+      <h3><span class="ico">🏷️</span> اللوغو / شعار القناة (PNG)</h3>
       <div class="row">
-        <input type="file" id="logoFile" accept="image/*" style="display:none"/>
-        <button class="btn full app-btn" data-click="logoFile">🖼️ رفع صورة اللوغو</button>
+        <input type="file" id="logoFile" accept="image/png,.png" style="display:none"/>
+        <button class="btn full app-btn" data-click="logoFile">🖼️ رفع اللوغو (PNG فقط)</button>
       </div>
       <div class="row">
         <label>الموضع</label>
@@ -401,20 +473,30 @@
       </div>
       <div class="row">
         <label>الحجم</label>
-        <input type="range" id="logoScale" min="5" max="60" value="15"/>
-        <span class="chip" id="logoScaleVal">15%</span>
+        <input type="range" id="logoScale" min="10" max="300" value="100"/>
+        <span class="chip" id="logoScaleVal">100%</span>
       </div>
       <div class="row">
         <label>الهامش</label>
         <input type="range" id="logoMargin" min="0" max="220" value="40"/>
         <span class="chip" id="logoMarginVal">40</span>
       </div>
+      <div class="row" style="border-top:1px dashed var(--border);padding-top:10px">
+        <label>اللون المراد حذفه</label>
+        <input type="color" id="logoKeyColor" value="#ffffff"/>
+        <label style="min-width:auto">القوة</label>
+        <input type="range" id="logoTolerance" min="10" max="150" value="60"/>
+      </div>
+      <div class="row">
+        <button class="btn secondary full" id="logoRemoveBgBtn">🪄 إزالة خلفية اللوغو تلقائيًا</button>
+      </div>
       <div class="row">
         <button class="btn danger full" id="removeLogoBtn">🗑️ إزالة اللوغو</button>
       </div>
+      <div class="hint">🔒 يُقبل اللوغو بصيغة <b>PNG فقط</b> للحفاظ على الشفافية، ويُعرض <b>بحجمه الأصلي</b>. أداة الحذف الذكية تزيل اللون المحدد من خلفية الشعار وتحوله إلى شفاف.</div>
     </div>
 
-    <!-- مربع التصميم -->
+    <!-- ═══ مربع التصميم ═══ -->
     <div class="section">
       <h3><span class="ico">⬜</span> مربع التصميم</h3>
       <div class="row">
@@ -450,10 +532,9 @@
       <div class="row">
         <button class="btn secondary full" id="applyBoxSize">📏 تطبيق حجم المربع المحدد</button>
       </div>
-      <div class="hint">💡 حدّد المربع على اللوحة لتنعكس قيمه هنا تلقائيًا.</div>
     </div>
 
-    <!-- النص -->
+    <!-- ═══ النص ═══ -->
     <div class="section">
       <h3><span class="ico">✍️</span> النص</h3>
       <div class="row">
@@ -516,7 +597,7 @@
       </div>
     </div>
 
-    <!-- التصدير -->
+    <!-- ═══ التصدير ═══ -->
     <div class="section">
       <h3><span class="ico">📦</span> التصدير</h3>
       <div class="row">
@@ -537,7 +618,7 @@
       <div class="row">
         <button class="btn ghost full" id="resetBtn">🔄 إعادة تعيين اللوحة</button>
       </div>
-      <div class="hint">✅ يتم التصدير بالمقاس الأصلي الكامل (ليس بمقاس المعاينة) وبجودة عالية.</div>
+      <div class="hint">✅ يتم التصدير بالمقاس الأصلي الكامل وبجودة عالية، مع ضمان تضمين الخطوط العربية في الصورة النهائية.</div>
     </div>
   </aside>
 
@@ -549,6 +630,9 @@
         <button class="tool-btn" id="dupBtn" title="تكرار المحدد">📄</button>
         <button class="tool-btn" id="fwdBtn" title="تقديم للأمام">⬆️</button>
         <button class="tool-btn" id="bwdBtn" title="إرسال للخلف">⬇️</button>
+        <span class="sep"></span>
+        <button class="tool-btn" id="centerHBtn" title="توسيط أفقي">↔️</button>
+        <button class="tool-btn" id="centerVBtn" title="توسيط عمودي">↕️</button>
       </div>
       <div class="tool-group">
         <span class="chip" id="sizeChip">1080 × 1080</span>
@@ -568,13 +652,15 @@
   </main>
 </div>
 
-<!-- ═══════════ شريط الحالة ═══════════ -->
+<!-- شريط الحالة -->
 <div class="status-bar">
   <span id="fabricStatus">⏳ المحرك…</span>
   <span class="sep"></span>
   <span id="fontsStatus">⏳ الخطوط…</span>
   <span class="sep"></span>
   <span id="objStatus">العناصر: 0</span>
+  <span class="sep"></span>
+  <span id="bgInfo">لا توجد خلفية</span>
   <span class="sep"></span>
   <span id="lastAction">جاري التهيئة…</span>
 </div>
@@ -583,19 +669,18 @@
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   استوديو التصميم — محرر صور احترافي
-   البنية: تعريف كل الدوال أولاً ← ثم تحميل المكتبة ← ثم التشغيل
-   (يمنع أي استدعاء قبل التعريف ويضمن تسلسلًا آمنًا)
+   استوديو التصميم — الإصدار الاحترافي
+   جديد: عرض الصور بالحجم الأصلي 1:1 • لوغو PNG فقط • أدوات ذكاء اصطناعي
    ═══════════════════════════════════════════════════════════════════ */
-
 'use strict';
 
 /* ─────────────── الحالة العامة ─────────────── */
 var APP = {
-  W: 1080, H: 1080,        // المقاس المنطقي للتصدير
-  userZoom: 1,             // تكبير المعاينة من المستخدم
+  W: 1080, H: 1080,
+  userZoom: 1,
   canvas: null,
-  bgSrc: null,             // DataURL لآخر خلفية (لإعادة الضبط عند تغيير المقاس)
+  bgSrc: null,
+  bgNatural: null,          // {w,h} أبعاد الصورة الأصلية
   logoImage: null,
   logoPos: 'tl',
   activeBox: null,
@@ -603,24 +688,25 @@ var APP = {
   currentAlign: 'right',
   templateObjects: [],
   currentTemplate: null,
+  clockObj: null,
   exportFormat: 'png',
   customFontCount: 0
 };
 
-/* ─────────────── أدوات مساعدة عامة ─────────────── */
+/* ─────────────── أدوات مساعدة ─────────────── */
 function $(id){ return document.getElementById(id); }
 
 var __toastTimer = null;
 function showToast(msg, type, duration){
-  type = type || 'ok'; duration = duration || 2600;
-  var t = $('toast');
-  if(!t) return;
+  type = type || 'ok'; duration = duration || 2800;
+  var t = $('toast'); if(!t) return;
   t.textContent = msg;
   t.className = 'toast show ' + type;
   clearTimeout(__toastTimer);
   __toastTimer = setTimeout(function(){ t.className = 'toast ' + type; }, duration);
 }
 function setLastAction(msg){ var el = $('lastAction'); if(el) el.textContent = msg; }
+function setBgInfo(msg){ var el = $('bgInfo'); if(el) el.textContent = msg; }
 function updateObjCount(){
   if(!APP.canvas) return;
   var el = $('objStatus');
@@ -634,21 +720,33 @@ function rgbToHex(c){
   function hx(n){ return ('0' + parseInt(n,10).toString(16)).slice(-2); }
   return '#' + hx(m[1]) + hx(m[2]) + hx(m[3]);
 }
+function hexToRgb(hex){
+  var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return m ? { r:parseInt(m[1],16), g:parseInt(m[2],16), b:parseInt(m[3],16) } : { r:255,g:255,b:255 };
+}
+function btnLoading(btn, loading, loadingText){
+  if(!btn) return;
+  if(loading){
+    btn.dataset.origHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = loadingText || '⏳ جاري المعالجة…';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = btn.dataset.origHtml || btn.innerHTML;
+  }
+}
 
-/* ─────────────── تحميل الصور بأمان (مع معالجة أخطاء كاملة) ─────────────── */
+/* ─────────────── تحميل الصور بأمان ─────────────── */
 function loadImageFromFile(file, onSuccess){
   console.log('[Image] بدء التحميل:', file && file.name, file && file.type, file && file.size, 'bytes');
-  if(!file){
-    console.warn('[Image] لم يتم اختيار ملف');
-    showToast('لم يتم اختيار أي ملف', 'warn'); return;
-  }
+  if(!file){ showToast('لم يتم اختيار أي ملف', 'warn'); return; }
   if(!file.type || file.type.indexOf('image/') !== 0){
     console.error('[Image] نوع الملف غير صالح:', file.type);
-    showToast('الملف ليس صورة صالحة — اختر PNG أو JPG أو WebP', 'err'); return;
+    showToast('الملف ليس صورة صالحة — اختر PNG أو JPG أو WebP', 'err', 3500); return;
   }
   var reader = new FileReader();
   reader.onerror = function(){
-    console.error('[Image] فشل FileReader في قراءة الملف');
+    console.error('[Image] فشل FileReader');
     showToast('تعذّرت قراءة الملف', 'err');
   };
   reader.onload = function(ev){
@@ -657,10 +755,9 @@ function loadImageFromFile(file, onSuccess){
     img.onload = function(){
       console.log('[Image] اكتمل التحميل:', img.width, '×', img.height);
       try{
-        var fabricImg = new fabric.Image(img);
-        onSuccess(fabricImg, dataUrl);
+        onSuccess(new fabric.Image(img), dataUrl);
       }catch(err){
-        console.error('[Image] فشل تحويل الصورة إلى عنصر Fabric:', err);
+        console.error('[Image] فشل التحويل إلى Fabric:', err);
         showToast('فشل معالجة الصورة: ' + err.message, 'err');
       }
     };
@@ -674,13 +771,11 @@ function loadImageFromFile(file, onSuccess){
 }
 
 /* ═══════════════════════════════════════════════
-   الدالة الرئيسية: تهيئة التطبيق بالكامل
-   (تُعرَّف قبل أي استدعاء — لا اعتماد على الرفع)
+   الدالة الرئيسية — تُعرَّف قبل أي استدعاء
    ═══════════════════════════════════════════════ */
 function initApp(){
-  console.log('[App] بدء تهيئة التطبيق');
+  console.log('[App] بدء التهيئة');
 
-  /* ── اللوحة ── */
   APP.canvas = new fabric.Canvas('c', {
     preserveObjectStacking: true,
     selection: true,
@@ -688,8 +783,7 @@ function initApp(){
   });
   fabric.Object.prototype.set({
     cornerColor: '#6d8bff', cornerStyle: 'circle',
-    transparentCorners: false, borderColor: '#6d8bff',
-    borderScaleFactor: 1.5
+    transparentCorners: false, borderColor: '#6d8bff', borderScaleFactor: 1.5
   });
 
   /* ── المعاينة والمقاس ── */
@@ -709,12 +803,16 @@ function initApp(){
     $('canvasW').value = APP.W; $('canvasH').value = APP.H;
     $('sizeChip').textContent = APP.W + ' × ' + APP.H;
     applyViewport();
-    if(APP.bgSrc) applyBackgroundFromSrc(APP.bgSrc, function(){
+    if(APP.bgSrc){
+      applyBackgroundFromSrc(APP.bgSrc, function(){
+        repositionLogo();
+        if(APP.currentTemplate) applyTemplate(APP.currentTemplate, true);
+        APP.canvas.renderAll();
+      });
+    } else {
       repositionLogo();
       if(APP.currentTemplate) applyTemplate(APP.currentTemplate, true);
-      APP.canvas.renderAll();
-    });
-    else { repositionLogo(); if(APP.currentTemplate) applyTemplate(APP.currentTemplate, true); }
+    }
   }
   var resizeTimer = null;
   window.addEventListener('resize', function(){
@@ -722,17 +820,43 @@ function initApp(){
     resizeTimer = setTimeout(applyViewport, 120);
   });
 
-  /* ── الخلفية ── */
+  /* ── فلاتر الخلفية ── */
+  function applyBgFilters(){
+    var img = APP.canvas.backgroundImage;
+    if(!img || !img.filters) return;
+    try{
+      img.filters = [
+        new fabric.Image.filters.Brightness({ brightness: (parseInt($('bgBright').value,10)   || 0) / 200 }),
+        new fabric.Image.filters.Contrast({   contrast:   (parseInt($('bgContrast').value,10) || 0) / 200 }),
+        new fabric.Image.filters.Saturation({ saturation: (parseInt($('bgSat').value,10)      || 0) / 200 })
+      ];
+      img.applyFilters();
+      APP.canvas.renderAll();
+    }catch(err){ console.warn('[Filters]', err); }
+  }
+  ['bgBright','bgContrast','bgSat'].forEach(function(id){
+    $(id).addEventListener('input', function(e){
+      $(id + 'Val').textContent = e.target.value;
+      applyBgFilters();
+    });
+  });
+  $('bgFiltersReset').addEventListener('click', function(){
+    ['bgBright','bgContrast','bgSat'].forEach(function(id){ $(id).value = 0; $(id + 'Val').textContent = '0'; });
+    applyBgFilters();
+    showToast('تمت إعادة ضبط الفلاتر', 'ok');
+  });
+
+  /* ── الخلفية: تُعرض بالحجم الأصلي 1:1 ── */
   function applyBackgroundFromSrc(dataUrl, done){
     fabric.Image.fromURL(dataUrl, function(img){
-      var scale = Math.max(APP.W / img.width, APP.H / img.height);
       img.set({
-        scaleX: scale, scaleY: scale,
-        left: APP.W / 2, top: APP.H / 2,
-        originX: 'center', originY: 'center',
+        scaleX: 1, scaleY: 1,               /* الحجم الأصلي بدون أي تمديد */
+        left: 0, top: 0,
+        originX: 'left', originY: 'top',
         selectable: false, evented: false
       });
       APP.canvas.setBackgroundImage(img, function(){
+        applyBgFilters();
         APP.canvas.renderAll();
         if(done) done();
       });
@@ -741,17 +865,21 @@ function initApp(){
   function setBackgroundFile(file){
     loadImageFromFile(file, function(fabricImg, dataUrl){
       APP.bgSrc = dataUrl;
-      var scale = Math.max(APP.W / fabricImg.width, APP.H / fabricImg.height);
+      APP.bgNatural = { w: fabricImg.width, h: fabricImg.height };
       fabricImg.set({
-        scaleX: scale, scaleY: scale,
-        left: APP.W / 2, top: APP.H / 2,
-        originX: 'center', originY: 'center',
+        scaleX: 1, scaleY: 1,
+        left: 0, top: 0, originX: 'left', originY: 'top',
         selectable: false, evented: false
       });
       APP.canvas.setBackgroundImage(fabricImg, function(){
+        applyBgFilters();
         APP.canvas.renderAll();
-        showToast('✓ تم تطبيق صورة الخلفية', 'ok');
-        setLastAction('تم رفع خلفية جديدة');
+        setBgInfo('الخلفية: ' + APP.bgNatural.w + '×' + APP.bgNatural.h + ' (حجم أصلي)');
+        showToast('✓ تم تطبيق الخلفية بحجمها الأصلي: ' + APP.bgNatural.w + '×' + APP.bgNatural.h, 'ok', 3200);
+        setLastAction('تم رفع خلفية: ' + APP.bgNatural.w + '×' + APP.bgNatural.h);
+        if(APP.bgNatural.w > APP.W || APP.bgNatural.h > APP.H){
+          showToast('الصورة أكبر من اللوحة — استخدم «ملاءمة اللوحة مع حجم الصورة» لعرضها كاملة', 'warn', 4000);
+        }
       });
     });
   }
@@ -760,20 +888,33 @@ function initApp(){
     if(f) setBackgroundFile(f);
     e.target.value = '';
   });
+  $('fitToBgBtn').addEventListener('click', function(){
+    if(!APP.bgNatural){ showToast('ارفع صورة خلفية أولًا', 'warn'); return; }
+    setSize(APP.bgNatural.w, APP.bgNatural.h);
+    showToast('✓ تمت ملاءمة اللوحة مع الصورة: ' + APP.bgNatural.w + '×' + APP.bgNatural.h, 'ok');
+  });
   $('bgColor').addEventListener('input', function(e){
     APP.canvas.backgroundColor = e.target.value;
     APP.canvas.renderAll();
   });
   $('removeBgBtn').addEventListener('click', function(){
-    APP.bgSrc = null;
+    APP.bgSrc = null; APP.bgNatural = null;
     APP.canvas.setBackgroundImage(null, function(){
       APP.canvas.renderAll();
+      setBgInfo('لا توجد خلفية');
       showToast('تمت إزالة الخلفية', 'ok');
     });
   });
   $('applySizeBtn').addEventListener('click', function(){
     setSize($('canvasW').value, $('canvasH').value);
     showToast('✓ تم تطبيق المقاس: ' + APP.W + '×' + APP.H, 'ok');
+  });
+  $('presetSizes').addEventListener('change', function(e){
+    if(!e.target.value) return;
+    var parts = e.target.value.split('x');
+    setSize(parts[0], parts[1]);
+    showToast('✓ تم تطبيق المقاس الجاهز: ' + APP.W + '×' + APP.H, 'ok');
+    e.target.value = '';
   });
 
   /* السحب والإفلات */
@@ -789,7 +930,7 @@ function initApp(){
     if(f) setBackgroundFile(f);
   });
 
-  /* ── اللوغو ── */
+  /* ── اللوغو: PNG فقط + حجم أصلي ── */
   function repositionLogo(){
     var L = APP.logoImage; if(!L) return;
     var margin = parseInt($('logoMargin').value,10) || 40;
@@ -802,17 +943,23 @@ function initApp(){
     APP.canvas.renderAll();
   }
   function setLogoFile(file){
+    /* التحقق الصارم من صيغة PNG */
+    var isPng = (file.type === 'image/png') || /\.png$/i.test(file.name);
+    if(!isPng){
+      console.error('[Logo] الصيغة مرفوضة — المطلوب PNG والملف هو:', file.type, file.name);
+      showToast('⚠️ اللوغو يجب أن يكون بصيغة PNG للحفاظ على الشفافية', 'err', 4000);
+      return;
+    }
     loadImageFromFile(file, function(fabricImg){
       if(APP.logoImage) APP.canvas.remove(APP.logoImage);
-      var pct = (parseInt($('logoScale').value,10) || 15) / 100;
-      var scale = (APP.W * pct) / fabricImg.width;
-      fabricImg.set({ scaleX: scale, scaleY: scale, left: 0, top: 0 });
+      var pct = (parseInt($('logoScale').value,10) || 100) / 100;
+      fabricImg.set({ scaleX: pct, scaleY: pct, left: 0, top: 0 });
       APP.canvas.add(fabricImg);
       APP.logoImage = fabricImg;
       repositionLogo();
       updateObjCount();
-      showToast('✓ تم رفع اللوغو', 'ok');
-      setLastAction('تم رفع لوغو جديد');
+      showToast('✓ تم رفع اللوغو (حجم أصلي: ' + fabricImg.width + '×' + fabricImg.height + ')', 'ok', 3200);
+      setLastAction('تم رفع لوغو PNG');
     });
   }
   $('logoFile').addEventListener('change', function(e){
@@ -832,8 +979,8 @@ function initApp(){
     var v = parseInt(e.target.value,10);
     $('logoScaleVal').textContent = v + '%';
     if(APP.logoImage){
-      var scale = (APP.W * (v/100)) / APP.logoImage.width;
-      APP.logoImage.set({ scaleX: scale, scaleY: scale });
+      var s = v / 100;
+      APP.logoImage.set({ scaleX: s, scaleY: s });
       repositionLogo();
     }
   });
@@ -843,6 +990,162 @@ function initApp(){
   });
   $('removeLogoBtn').addEventListener('click', function(){
     if(APP.logoImage){ APP.canvas.remove(APP.logoImage); APP.logoImage = null; updateObjCount(); showToast('تم إزالة اللوغو','ok'); }
+  });
+
+  /* أداة إزالة خلفية اللوغو (معالجة بكسلات محلية) */
+  $('logoRemoveBgBtn').addEventListener('click', function(){
+    if(!APP.logoImage){ showToast('ارفع لوغو أولًا', 'warn'); return; }
+    var el = APP.logoImage.getElement ? APP.logoImage.getElement() : APP.logoImage._element;
+    if(!el){ showToast('تعذّر الوصول إلى بيانات الصورة', 'err'); return; }
+    var cw = el.naturalWidth || el.width;
+    var ch = el.naturalHeight || el.height;
+    if(cw * ch > 16000000){ showToast('الصورة كبيرة جدًا على المعالجة', 'err'); return; }
+    var off = document.createElement('canvas'); off.width = cw; off.height = ch;
+    var ctx = off.getContext('2d');
+    ctx.drawImage(el, 0, 0, cw, ch);
+    var imgData;
+    try{ imgData = ctx.getImageData(0, 0, cw, ch); }
+    catch(err){ console.error('[LogoKey] Canvas ملوّث:', err); showToast('تعذّرت معالجة الصورة', 'err'); return; }
+    var key = hexToRgb($('logoKeyColor').value);
+    var tol = parseInt($('logoTolerance').value,10) || 60;
+    var d = imgData.data;
+    var removedCount = 0;
+    for(var i = 0; i < d.length; i += 4){
+      var dist = Math.sqrt(
+        (d[i]   - key.r) * (d[i]   - key.r) +
+        (d[i+1] - key.g) * (d[i+1] - key.g) +
+        (d[i+2] - key.b) * (d[i+2] - key.b)
+      );
+      if(dist < tol){ d[i+3] = 0; removedCount++; }
+      else if(dist < tol * 1.4){ d[i+3] = Math.round(d[i+3] * ((dist - tol) / (tol * 0.4))); }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    var newImg = new fabric.Image(off);
+    newImg.set({
+      left: APP.logoImage.left, top: APP.logoImage.top,
+      scaleX: APP.logoImage.scaleX, scaleY: APP.logoImage.scaleY
+    });
+    APP.canvas.remove(APP.logoImage);
+    APP.canvas.add(newImg);
+    APP.logoImage = newImg;
+    APP.canvas.renderAll(); updateObjCount();
+    console.log('[LogoKey] تمت إزالة', removedCount, 'بكسل مقارب للون المحدد');
+    showToast('✓ تمت إزالة خلفية اللوغو (' + Math.round(removedCount / (cw*ch) * 100) + '% من الصورة)', 'ok', 3200);
+  });
+
+  /* ── أدوات الذكاء الاصطناعي ── */
+  var AI_PROMPT_IDEAS = [
+    'خلفية استوديو أخبار احترافي بألوان أزرق داكن وإضاءة درامية',
+    'منظر حضري لمدينة عربية ليلاً مع أضواء ذهبية',
+    'خلفية تجريدية هندسية بألوان حمراء وذهبية تناسب الأخبار العاجلة',
+    'غروب شمس فوق نهر مع انعكاسات برتقالية هادئة',
+    'قاعة مؤتمرات حديثة بتقنيات إضاءة زرقاء',
+    'خريطة عالم رقمية بأسلوب شبكي متوهج',
+    'صحراء رملية عند الفجر بألوان دافئة'
+  ];
+  $('aiSurpriseBtn').addEventListener('click', function(){
+    var pick = AI_PROMPT_IDEAS[Math.floor(Math.random() * AI_PROMPT_IDEAS.length)];
+    $('aiPrompt').value = pick;
+    showToast('🎲 تم اقتراح وصف — اضغط توليد', 'ok');
+  });
+  $('aiGenBtn').addEventListener('click', function(){
+    var prompt = $('aiPrompt').value.trim();
+    if(!prompt){ showToast('اكتب وصفًا للصورة أولًا', 'warn'); return; }
+    var size = $('aiSize').value.split('x');
+    var genW = parseInt(size[0],10), genH = parseInt(size[1],10);
+    var seed = Math.floor(Math.random() * 1000000);
+    var url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) +
+              '?width=' + genW + '&height=' + genH + '&nologo=true&seed=' + seed;
+    console.log('[AI] توليد صورة:', url);
+    var genBtn = $('aiGenBtn');
+    btnLoading(genBtn, true, '🤖 جاري التوليد… قد يستغرق 10–30 ثانية');
+    showToast('🤖 بدأ توليد الصورة… الرجاء الانتظار', 'warn', 4000);
+    var im = new Image();
+    im.crossOrigin = 'anonymous';
+    var finished = false;
+    var watchdog = setTimeout(function(){
+      if(!finished){
+        finished = true;
+        btnLoading(genBtn, false);
+        console.error('[AI] انتهت مهلة التوليد');
+        showToast('استغرق التوليد وقتًا طويلًا — حاول مجددًا', 'err');
+      }
+    }, 90000);
+    im.onload = function(){
+      if(finished) return; finished = true; clearTimeout(watchdog);
+      btnLoading(genBtn, false);
+      try{
+        var fabricImg = new fabric.Image(im);
+        APP.bgSrc = url;
+        APP.bgNatural = { w: fabricImg.width, h: fabricImg.height };
+        fabricImg.set({
+          scaleX: 1, scaleY: 1, left: 0, top: 0,
+          originX: 'left', originY: 'top',
+          selectable: false, evented: false
+        });
+        APP.canvas.setBackgroundImage(fabricImg, function(){
+          applyBgFilters();
+          APP.canvas.renderAll();
+          setBgInfo('خلفية AI: ' + APP.bgNatural.w + '×' + APP.bgNatural.h);
+          showToast('✓ تم توليد الصورة بالذكاء الاصطناعي', 'ok');
+          setLastAction('تم توليد خلفية بالذكاء الاصطناعي');
+        });
+      }catch(err){
+        console.error('[AI] فشل استخدام الصورة المولدة:', err);
+        showToast('فشل تطبيق الصورة المولدة: ' + err.message, 'err');
+      }
+    };
+    im.onerror = function(){
+      if(finished) return; finished = true; clearTimeout(watchdog);
+      btnLoading(genBtn, false);
+      console.error('[AI] فشل توليد الصورة من الخدمة');
+      showToast('تعذّر التوليد — تحقق من الإنترنت وحاول مجددًا', 'err', 3500);
+    };
+    im.src = url;
+  });
+
+  $('aiHeadlineBtn').addEventListener('click', function(){
+    var topic = $('aiTopic').value.trim();
+    if(!topic){ showToast('اكتب موضوع الخبر أولًا', 'warn'); return; }
+    var hBtn = $('aiHeadlineBtn');
+    btnLoading(hBtn, true, '⏳');
+    $('aiResults').innerHTML = '';
+    var instruction = 'اقترح 3 عناوين أخبار قصيرة وجذابة باللغة العربية حول الموضوع التالي: ' + topic +
+                      '. اكتب كل عنوان في سطر مستقل دون ترقيم أو شرح.';
+    var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var to = controller ? setTimeout(function(){ controller.abort(); }, 30000) : null;
+    fetch('https://text.pollinations.ai/' + encodeURIComponent(instruction), {
+      signal: controller ? controller.signal : undefined
+    })
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(txt){
+      btnLoading(hBtn, false);
+      var lines = txt.split('\n').map(function(s){
+        return s.replace(/^[\s\-•*\d\)؛:.]+/, '').trim();
+      }).filter(function(s){ return s.length > 5; }).slice(0, 5);
+      if(lines.length === 0) throw new Error('استجابة فارغة');
+      lines.forEach(function(line){
+        var b = document.createElement('button');
+        b.className = 'ai-chip';
+        b.textContent = line;
+        b.addEventListener('click', function(){
+          $('tplNewsText').value = line;
+          $('textInput').value = line;
+          if(APP.currentTemplate) applyTemplate(APP.currentTemplate, true);
+          showToast('✓ تم اعتماد العنوان — اضغط إضافة النص لوضعه على اللوحة', 'ok', 3000);
+        });
+        $('aiResults').appendChild(b);
+      });
+      setLastAction('تم اقتراح عناوين بالذكاء الاصطناعي');
+    })
+    .catch(function(err){
+      btnLoading(hBtn, false);
+      console.error('[AI] فشل اقتراح العناوين:', err);
+      showToast('تعذّر جلب الاقتراحات — تحقق من الإنترنت', 'err');
+    });
   });
 
   /* ── قوالب الأخبار ── */
@@ -864,7 +1167,6 @@ function initApp(){
     if(!silent) showToast('تمت إزالة القالب', 'ok');
   }
   function applyTemplate(type, silent){
-    /* إزالة عناصر القالب القديم فقط */
     APP.templateObjects.forEach(function(o){
       if(APP.canvas.getObjects().indexOf(o) > -1) APP.canvas.remove(o);
     });
@@ -892,10 +1194,9 @@ function initApp(){
 
     var newsBox = new fabric.Rect({
       left: 0, top: newsY, width: APP.W, height: newsH,
-      fill: newsBg, rx: rx, ry: rx, opacity: 0.94, selectable: true
+      fill: newsBg, rx: rx, ry: rx, opacity: 0.94
     });
     newsBox._tplRole = 'newsBox';
-
     var newsTextObj = new fabric.Textbox(newsText, {
       left: APP.W / 2, top: newsY + newsH / 2,
       originX: 'center', originY: 'center',
@@ -904,13 +1205,11 @@ function initApp(){
       fill: newsColor, textAlign: 'center', direction: 'rtl', lineHeight: 1.35
     });
     newsTextObj._tplRole = 'newsText';
-
     var banner = new fabric.Rect({
       left: 0, top: bannerY, width: APP.W, height: bannerH,
-      fill: bannerColor, rx: rx, ry: rx, selectable: true
+      fill: bannerColor, rx: rx, ry: rx
     });
     banner._tplRole = 'banner';
-
     var bannerLabel = new fabric.Textbox(bannerText, {
       left: APP.W - 50, top: bannerY + bannerH / 2,
       originX: 'right', originY: 'center',
@@ -919,7 +1218,6 @@ function initApp(){
       fill: bannerTextColor, textAlign: 'right', direction: 'rtl'
     });
     bannerLabel._tplRole = 'bannerLabel';
-
     var separator = new fabric.Rect({
       left: 50, top: bannerPos === 'top' ? bannerY + bannerH - 6 : newsY + newsH,
       width: APP.W - 100, height: 6, fill: bannerColor
@@ -932,8 +1230,8 @@ function initApp(){
     });
 
     $('templateCustom').style.display = 'block';
-    var card = document.querySelector('.template-card[data-template="' + type + '"]');
     document.querySelectorAll('.template-card').forEach(function(c){ c.classList.remove('active'); });
+    var card = document.querySelector('.template-card[data-template="' + type + '"]');
     if(card) card.classList.add('active');
     APP.canvas.renderAll(); updateObjCount();
     if(!silent){
@@ -975,6 +1273,36 @@ function initApp(){
       b.classList.add('active');
       if(APP.currentTemplate) applyTemplate(APP.currentTemplate, true);
     });
+  });
+
+  /* عنصر الساعة والتاريخ */
+  $('addClockBtn').addEventListener('click', function(){
+    var now = new Date();
+    var timeStr = now.toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+    var dateStr = now.toLocaleDateString('ar', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    var label = dateStr + ' | ' + timeStr;
+    if(APP.clockObj && APP.canvas.getObjects().indexOf(APP.clockObj) > -1){
+      APP.clockObj.set('text', label);
+      APP.canvas.renderAll();
+      showToast('🕒 تم تحديث الوقت', 'ok');
+      return;
+    }
+    var clockBg = new fabric.Rect({
+      left: 40, top: 40, width: 560, height: 70,
+      fill: 'rgba(10,13,31,.75)', rx: 12, ry: 12
+    });
+    clockBg._tplRole = 'clockBg';
+    var clockTxt = new fabric.Textbox(label, {
+      left: 320, top: 75, originX: 'center', originY: 'center',
+      width: 520, fontSize: 34, fontWeight: 'bold',
+      fontFamily: 'Almarai', fill: '#ffffff', textAlign: 'center', direction: 'rtl'
+    });
+    clockTxt._tplRole = 'clockText';
+    APP.canvas.add(clockBg);
+    APP.canvas.add(clockTxt);
+    APP.clockObj = clockTxt;
+    APP.canvas.renderAll(); updateObjCount();
+    showToast('✓ تمت إضافة الساعة والتاريخ', 'ok');
   });
 
   /* ── مربع التصميم ── */
@@ -1095,26 +1423,23 @@ function initApp(){
       charSpacing: parseInt($('charSpacing').value,10),
       textAlign: APP.currentAlign
     };
-    /* تحديث نص محدد على اللوحة */
     var sel = APP.canvas.getActiveObject();
     if(sel && (sel.type === 'textbox' || sel.type === 'i-text')){
       sel.set(props); sel.set('text', txt);
-      sel.initDimensions && sel.initDimensions(); sel.setCoords();
+      if(sel.initDimensions) sel.initDimensions(); sel.setCoords();
       APP.canvas.renderAll();
       showToast('✓ تم تحديث النص المحدد', 'ok');
       return;
     }
-    /* تحديث آخر نص أُضيف */
     if(APP.currentText && APP.canvas.getObjects().indexOf(APP.currentText) > -1){
       APP.currentText.set(props); APP.currentText.set('text', txt);
-      APP.currentText.initDimensions && APP.currentText.initDimensions();
+      if(APP.currentText.initDimensions) APP.currentText.initDimensions();
       APP.currentText.setCoords();
       APP.canvas.setActiveObject(APP.currentText);
       APP.canvas.renderAll();
       showToast('✓ تم تحديث النص', 'ok');
       return;
     }
-    /* إضافة نص جديد */
     var left = APP.W/2, top = APP.H/2, width = APP.W * 0.8;
     if(APP.activeBox && !APP.activeBox._tplRole){
       left = APP.activeBox.left + (APP.activeBox.width * APP.activeBox.scaleX)/2;
@@ -1157,15 +1482,14 @@ function initApp(){
           $('customFontSelect').value = name;
           $('customFontRow').style.display = 'flex';
           showToast('✓ تم تثبيت الخط: ' + f.name, 'ok');
-          setLastAction('تم رفع خط مخصص');
           applyToCurrentText('fontFamily', name);
           checkFonts();
         }).catch(function(err){
-          console.error('[Font] فشل تحميل الخط:', err);
+          console.error('[Font] فشل التحميل:', err);
           showToast('فشل تحميل الخط — تأكد أنه ملف TTF/OTF صالح', 'err');
         });
       }catch(err){
-        console.error('[Font] خطأ غير متوقع:', err);
+        console.error('[Font] خطأ:', err);
         showToast('خطأ أثناء معالجة الخط', 'err');
       }
     };
@@ -1173,7 +1497,7 @@ function initApp(){
     e.target.value = '';
   });
 
-  /* ── أدوات الكائنات (حذف/تكرار/ترتيب) ── */
+  /* ── أدوات الكائنات ── */
   function getActive(){ return APP.canvas.getActiveObject(); }
   $('delBtn').addEventListener('click', function(){
     var o = getActive();
@@ -1181,6 +1505,7 @@ function initApp(){
     if(o === APP.logoImage) APP.logoImage = null;
     if(o === APP.activeBox) APP.activeBox = null;
     if(o === APP.currentText) APP.currentText = null;
+    if(o === APP.clockObj) APP.clockObj = null;
     APP.canvas.remove(o);
     APP.canvas.discardActiveObject();
     APP.canvas.renderAll(); updateObjCount();
@@ -1205,15 +1530,24 @@ function initApp(){
     var o = getActive(); if(!o) return;
     APP.canvas.sendBackwards(o); APP.canvas.renderAll();
   });
+  $('centerHBtn').addEventListener('click', function(){
+    var o = getActive();
+    if(!o){ showToast('حدّد عنصرًا أولًا', 'warn'); return; }
+    APP.canvas.centerObjectH(o); o.setCoords(); APP.canvas.renderAll();
+  });
+  $('centerVBtn').addEventListener('click', function(){
+    var o = getActive();
+    if(!o){ showToast('حدّد عنصرًا أولًا', 'warn'); return; }
+    APP.canvas.centerObjectV(o); o.setCoords(); APP.canvas.renderAll();
+  });
   document.addEventListener('keydown', function(e){
     if(e.key !== 'Delete' && e.key !== 'Backspace') return;
     var a = document.activeElement;
     if(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable)) return;
-    var o = getActive();
-    if(o){ e.preventDefault(); $('delBtn').click(); }
+    if(getActive()){ e.preventDefault(); $('delBtn').click(); }
   });
 
-  /* ── تكبير المعاينة ── */
+  /* تكبير المعاينة */
   $('zoomIn').addEventListener('click', function(){ APP.userZoom = Math.min(3, APP.userZoom + 0.1); applyViewport(); });
   $('zoomOut').addEventListener('click', function(){ APP.userZoom = Math.max(0.2, APP.userZoom - 0.1); applyViewport(); });
   $('zoomFit').addEventListener('click', function(){ APP.userZoom = 1; applyViewport(); });
@@ -1234,9 +1568,7 @@ function initApp(){
     setLastAction('جاري التصدير…');
     setTimeout(function(){
       try{
-        /* ضمان تحميل كل الخطوط المستخدمة قبل التصدير */
-        var jobs = [];
-        var seen = {};
+        var jobs = [], seen = {};
         APP.canvas.getObjects().forEach(function(o){
           if((o.type === 'textbox' || o.type === 'i-text' || o.type === 'text') && o.fontFamily && !seen[o.fontFamily]){
             seen[o.fontFamily] = true;
@@ -1263,7 +1595,7 @@ function initApp(){
             showToast('✓ تم تصدير التصميم بنجاح', 'ok');
             setLastAction('تم التصدير: ' + a.download);
           }catch(err){
-            console.error('[Export] فشل التصدير:', err);
+            console.error('[Export] فشل:', err);
             showToast('فشل التصدير: ' + err.message, 'err', 4000);
           }
         };
@@ -1271,27 +1603,29 @@ function initApp(){
           Promise.all(jobs).catch(function(){}).then(function(){ return document.fonts.ready; }).then(finish, finish);
         } else { finish(); }
       }catch(err){
-        console.error('[Export] خطأ غير متوقع:', err);
+        console.error('[Export] خطأ:', err);
         showToast('فشل التصدير: ' + err.message, 'err', 4000);
       }
     }, 60);
   });
 
-  /* ── إعادة التعيين ── */
+  /* إعادة التعيين */
   $('resetBtn').addEventListener('click', function(){
     if(!confirm('هل تريد إعادة تعيين اللوحة بالكامل؟ سيتم حذف كل العناصر.')) return;
     APP.canvas.clear();
     APP.canvas.backgroundColor = '#ffffff';
-    APP.bgSrc = null; APP.logoImage = null; APP.activeBox = null; APP.currentText = null;
+    APP.bgSrc = null; APP.bgNatural = null; APP.logoImage = null;
+    APP.activeBox = null; APP.currentText = null; APP.clockObj = null;
     APP.templateObjects = []; APP.currentTemplate = null;
     $('templateCustom').style.display = 'none';
     document.querySelectorAll('.template-card').forEach(function(c){ c.classList.remove('active'); });
+    setBgInfo('لا توجد خلفية');
     APP.canvas.renderAll(); updateObjCount();
     showToast('✓ تمت إعادة التعيين', 'ok');
     setLastAction('تمت إعادة التعيين');
   });
 
-  /* أزرار فتح الملفات الموحّدة */
+  /* أزرار فتح الملفات */
   document.querySelectorAll('.app-btn[data-click]').forEach(function(btn){
     btn.addEventListener('click', function(){
       var input = $(btn.getAttribute('data-click'));
@@ -1299,11 +1633,10 @@ function initApp(){
     });
   });
 
-  /* تشغيل أولي */
   setSize(1080, 1080);
   updateObjCount();
   checkFonts();
-  setLastAction('جاهز — ارفع صورة أو اختر قالبًا للبدء');
+  setLastAction('جاهز — ارفع صورة أو جرّب أدوات الذكاء الاصطناعي');
   console.log('[App] اكتملت التهيئة بنجاح ✔');
 }
 
@@ -1324,7 +1657,7 @@ function checkFonts(){
   if(document.fonts && document.fonts.ready){ document.fonts.ready.then(run, run); } else { run(); }
 }
 
-/* ─────────────── إظهار/إخفاء شاشة التحميل ─────────────── */
+/* ─────────────── شاشة التحميل ─────────────── */
 function hideOverlay(){
   var ov = $('loadingOverlay');
   if(ov) ov.classList.add('hidden');
@@ -1336,7 +1669,7 @@ function overlayError(msg){
   var rb = $('retryBtn'); if(rb) rb.style.display = 'inline-flex';
 }
 
-/* ─────────────── محمّل Fabric.js مع مصادر احتياطية ─────────────── */
+/* ─────────────── محمّل Fabric مع مصادر احتياطية ─────────────── */
 function loadFabric(onSuccess, onFail){
   var CDN_URLS = [
     'https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js',
@@ -1345,36 +1678,28 @@ function loadFabric(onSuccess, onFail){
   ];
   var idx = 0;
   function attempt(){
-    if(idx >= CDN_URLS.length){
-      console.error('[Fabric] فشلت جميع المصادر');
-      onFail(); return;
-    }
+    if(idx >= CDN_URLS.length){ console.error('[Fabric] فشلت جميع المصادر'); onFail(); return; }
     var url = CDN_URLS[idx];
-    console.log('[Fabric] محاولة التحميل من:', url);
+    console.log('[Fabric] محاولة:', url);
     var s = document.createElement('script');
     s.src = url;
     s.onload = function(){
-      if(typeof fabric !== 'undefined'){
-        console.log('[Fabric] تم التحميل بنجاح — الإصدار', fabric.version);
-        onSuccess();
-      } else { idx++; attempt(); }
+      if(typeof fabric !== 'undefined'){ console.log('[Fabric] تم ✔ الإصدار', fabric.version); onSuccess(); }
+      else { idx++; attempt(); }
     };
-    s.onerror = function(){
-      console.warn('[Fabric] فشل المصدر:', url);
-      idx++; attempt();
-    };
+    s.onerror = function(){ console.warn('[Fabric] فشل المصدر:', url); idx++; attempt(); };
     document.head.appendChild(s);
   }
   attempt();
 }
 
-/* ─────────────── نقطة التشغيل (بعد تعريف كل شيء) ─────────────── */
+/* ─────────────── نقطة التشغيل ─────────────── */
 function boot(){
   loadFabric(function(){
     var fs = $('fabricStatus');
     if(fs) fs.innerHTML = '<span class="ok">✓ Fabric.js ' + fabric.version + '</span>';
     try{
-      initApp();          /* initApp معرّفة أعلاه — استدعاء آمن */
+      initApp();
       hideOverlay();
     }catch(err){
       console.error('[App] خطأ أثناء التهيئة:', err);
