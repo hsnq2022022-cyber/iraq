@@ -1,10 +1,7 @@
 /**
- * ========================================
- * Icons Module
- * ========================================
- * مكتبة أيقونات SVG داخلية
+ * Icons Module (مُصلَح)
+ * [إصلاح] إزالة المسافات الزائدة + إضافة أيقونة 'eye'
  */
-
 window.AppIcons = (function() {
   'use strict';
 
@@ -35,7 +32,10 @@ window.AppIcons = (function() {
     chart: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>',
     code: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
     globe: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>',
-    copy: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>'
+    copy: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+    /* [إصلاح] أيقونة 'eye' المفقودة */
+    eye: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    eyeSlash: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>'
   };
 
   function get(name, options = {}) {
@@ -44,32 +44,22 @@ window.AppIcons = (function() {
       console.warn(`Icon "${name}" not found`);
       return '';
     }
-
     let result = icon;
-    
     if (options.size) {
       result = result.replace(/width="\d+"/g, `width="${options.size}"`);
       result = result.replace(/height="\d+"/g, `height="${options.size}"`);
     }
-    
     if (options.class) {
       result = result.replace('<svg', `<svg class="${options.class}"`);
     }
-    
     if (options.color) {
       result = result.replace(/stroke="currentColor"/g, `stroke="${options.color}"`);
     }
-    
     return result;
   }
 
-  function exists(name) {
-    return !!icons[name];
-  }
-
-  function list() {
-    return Object.keys(icons);
-  }
+  function exists(name) { return !!icons[name]; }
+  function list() { return Object.keys(icons); }
 
   return { get, exists, list };
 })();
