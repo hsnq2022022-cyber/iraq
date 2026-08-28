@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة سوشيال - منصة إدارة السوشيال ميديا بالذكاء الاصطناعي</title>
+  <meta name="description" content="منصة إدارة سوشيال ميديا مدعومة بالذكاء الاصطناعي">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <div class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ai-engine.js"></script>
+  <script src="js/kb-ingest.js"></script>
+  <script src="js/router.js"></script>
+
+  <!-- Pages -->
+  <script src="pages/modals.js"></script>
+  <script src="pages/forms.js"></script>
+  <script src="pages/auth.js"></script>
+
+  <script src="pages/dashboard-home.js"></script>
+  <script src="pages/dashboard-agents.js"></script>
+  <script src="pages/dashboard-kb.js"></script>
+  <script src="pages/dashboard-widgets.js"></script>
+  <script src="pages/dashboard-builder.js"></script>
+  <script src="pages/dashboard-conversations.js"></script>
+  <script src="pages/dashboard-contacts.js"></script>
+  <script src="pages/dashboard-analytics.js"></script>
+  <script src="pages/dashboard-settings.js"></script>
+  <script src="pages/dashboard-billing.js"></script>
+
+  <!-- Boot -->
+  <script src="pages/boot.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>موقع عميل تجريبي - اختبار الويدجت</title>
+  <style>
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      margin: 0;
+      background: #f4f6f8;
+      color: #222;
+    }
+    header {
+      background: #1f2937;
+      color: #fff;
+      padding: 20px 30px;
+    }
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+    }
+    .notice {
+      border: 2px dashed #f59e0b;
+      background: #fffbeb;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>شركة العميل التجريبية</h1>
+    <p>هذه صفحة مستقلة تمامًا تحاكي موقع عميل حقيقي لاختبار الويدجت.</p>
+  </header>
+
+  <main>
+    <div class="notice">
+      <strong>تعليمات الاختبار:</strong>
+      <ol>
+        <li>أنشئ وكيلًا وويدجت من لوحة التحكم، وانسخ <strong>توكن الويدجت</strong>.</li>
+        <li>استبدل <code>ضع_توكن_الويدجت_هنا</code> في أسفل هذا الملف بالتوكن الحقيقي.</li>
+        <li>شغّل المشروع عبر خادم محلي: <code>npx serve .</code></li>
+        <li>افتح هذه الصفحة عبر الخادم المحلي (وليس عبر فتح الملف مباشرة).</li>
+        <li>جرّب المحادثة، ثم تحقق من تسجيلها في لوحة التحكم → المحادثات والعملاء.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>من نحن</h2>
+      <p>
+        هذا نص تجريبي يمثل محتوى موقع العميل. الويدجت يجب أن يظهر أسفل الصفحة
+        كزر عائم، وعند الضغط عليه تفتح نافذة محادثة حقيقية تتصل بخادم الذكاء الاصطناعي.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>خدماتنا</h2>
+      <p>
+        يمكنك سؤال الويدجت عن أي معلومات موجودة في قاعدة المعرفة المرتبطة بالوكيل،
+        وسيعتمد الرد فعليًا على محتوى قاعدة المعرفة (RAG) وليس على معرفة عامة.
+      </p>
+    </div>
+  </main>
+
+  <!-- ========================================
+       تضمين الويدجت (استبدل التوكن بالتوكن الحقيقي)
+  ========================================= -->
+  <script
+    src="/widget/widget.js"
+    data-widget-token="ضع_توكن_الويدجت_هنا"
+    defer>
+  </script>
+
+</body>
+</html>
