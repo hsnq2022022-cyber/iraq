@@ -1,10 +1,10 @@
 /**
- * ========================================
- * Modals
- * ========================================
+ * Modals (مُصلَح)
+ * [إصلاح] إضافة دعم مفتاح Escape + aria-labelledby
  */
-
 window.Modals = {
+  _escapeHandler: null,
+
   getRoot: function() {
     let root = document.getElementById('modal-root');
     if (!root) {
@@ -17,13 +17,14 @@ window.Modals = {
 
   open: function({ title, body, footer = '' }) {
     const root = this.getRoot();
+    const modalId = 'modal-title-' + Date.now();
 
     root.innerHTML = `
       <div class="modal-backdrop" data-modal-backdrop>
-        <div class="modal-panel" role="dialog" aria-modal="true">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="${modalId}">
           <div class="modal-header">
-            <h3 class="modal-title">${window.AppHelpers.esc(title || '')}</h3>
-            <button type="button" class="icon-btn" data-modal-close>
+            <h3 class="modal-title" id="${modalId}">${window.AppHelpers.esc(title || '')}</h3>
+            <button type="button" class="icon-btn" data-modal-close aria-label="إغلاق">
               ${window.AppIcons.get('close', { size: 18 })}
             </button>
           </div>
@@ -42,11 +43,31 @@ window.Modals = {
     root.querySelectorAll('[data-modal-close]').forEach(btn => {
       btn.addEventListener('click', () => this.close());
     });
+
+    // [إصلاح] إغلاق بمفتاح Escape
+    this._escapeHandler = (e) => {
+      if (e.key === 'Escape') {
+        this.close();
+        document.removeEventListener('keydown', this._escapeHandler);
+      }
+    };
+    document.addEventListener('keydown', this._escapeHandler);
+
+    // [تحسين] التركيز على أول عنصر قابل للتركيز
+    const firstFocusable = root.querySelector('input, select, textarea, button');
+    if (firstFocusable) {
+      setTimeout(() => firstFocusable.focus(), 50);
+    }
   },
 
   close: function() {
     const root = document.getElementById('modal-root');
     if (root) root.innerHTML = '';
+
+    if (this._escapeHandler) {
+      document.removeEventListener('keydown', this._escapeHandler);
+      this._escapeHandler = null;
+    }
   },
 
   confirm: function(title, message, confirmLabel = 'تأكيد', danger = false) {
