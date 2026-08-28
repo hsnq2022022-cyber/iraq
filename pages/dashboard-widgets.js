@@ -102,7 +102,7 @@ window.Pages.dashboardWidgets = {
                     : '<span class="badge badge-gray">موقوف</span>'}
                 </td>
                 <td>
-                  <span class="small muted">${window.AppHelpers.esc(widget.token.slice(0, 10))}...</span>
+                <span class="small muted">${window.AppHelpers.esc((widget.token || '').slice(0, 10))}...</span>
                 </td>
                 <td>
                   <div style="display:flex; gap:8px; flex-wrap:wrap;">
