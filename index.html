@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>إدارة سوشيال - منصة إدارة السوشيال ميديا بالذكاء الاصطناعي</title>
   <meta name="description" content="منصة إدارة سوشيال ميديا مدعومة بالذكاء الاصطناعي">
+  <title>إدارة سوشيال — منصة إدارة السوشيال ميديا بالذكاء الاصطناعي</title>
 
-  <!-- Fonts -->
+  <!-- [إصلاح] Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230ABAB5'/><path d='M33 42L50 25L67 42M50 25V75' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+
+  <!-- [تحسين] خط Tajawal بدلاً من Aref Ruqaa -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Supabase JS SDK -->
+  <!-- [إصلاح] Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- Custom Styles -->
@@ -22,38 +25,34 @@
 </head>
 <body>
   <div id="app">
-    <div class="loading-screen">
-      <div class="loading-spinner"></div>
+    <!-- [إصلاح] إضافة دور ووصف لشاشة التحميل -->
+    <div class="loading-screen" role="status" aria-label="جاري تحميل التطبيق">
+      <div class="loading-spinner" aria-hidden="true"></div>
       <p>جاري التحميل...</p>
     </div>
   </div>
 
-  <!-- Core Scripts -->
-  <script src="js/config.js"></script>
-  <script src="js/icons.js"></script>
-  <script src="js/helpers.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/ai-engine.js"></script>
-  <script src="js/kb-ingest.js"></script>
-  <script src="js/router.js"></script>
-
-  <!-- Pages -->
-  <script src="pages/modals.js"></script>
-  <script src="pages/forms.js"></script>
-  <script src="pages/auth.js"></script>
-
-  <script src="pages/dashboard-home.js"></script>
-  <script src="pages/dashboard-agents.js"></script>
-  <script src="pages/dashboard-kb.js"></script>
-  <script src="pages/dashboard-widgets.js"></script>
-  <script src="pages/dashboard-builder.js"></script>
-  <script src="pages/dashboard-conversations.js"></script>
-  <script src="pages/dashboard-contacts.js"></script>
-  <script src="pages/dashboard-analytics.js"></script>
-  <script src="pages/dashboard-settings.js"></script>
-  <script src="pages/dashboard-billing.js"></script>
-
-  <!-- Boot -->
-  <script src="pages/boot.js"></script>
+  <!-- [إصلاح] إضافة defer لكل السكربتات + ترتيب صحيح -->
+  <script src="js/config.js" defer></script>
+  <script src="js/icons.js" defer></script>
+  <script src="js/helpers.js" defer></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/ai-engine.js" defer></script>
+  <script src="js/kb-ingest.js" defer></script>
+  <script src="js/router.js" defer></script>
+  <script src="pages/modals.js" defer></script>
+  <script src="pages/forms.js" defer></script>
+  <script src="pages/dashboard-home.js" defer></script>
+  <script src="pages/dashboard-agents.js" defer></script>
+  <script src="pages/dashboard-kb.js" defer></script>
+  <script src="pages/dashboard-widgets.js" defer></script>
+  <script src="pages/dashboard-builder.js" defer></script>
+  <script src="pages/dashboard-conversations.js" defer></script>
+  <script src="pages/dashboard-contacts.js" defer></script>
+  <script src="pages/dashboard-analytics.js" defer></script>
+  <script src="pages/dashboard-settings.js" defer></script>
+  <script src="pages/dashboard-billing.js" defer></script>
+  <script src="pages/auth.js" defer></script>
+  <script src="pages/boot.js" defer></script>
 </body>
 </html>
